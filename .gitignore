@@ -1,0 +1,18 @@
+# Large database files and archives (per user instruction: exclude large db files)
+*.db
+*.db-journal
+*.db-wal
+*.sqlite
+*.sqlite3
+*.zip
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

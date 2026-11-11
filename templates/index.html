@@ -1,0 +1,2100 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Early NPA Risk Review – Banking Risk Intelligence</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      --header-bg: #153454;
+      --primary-action: #216AA5;
+      --primary-action-hover: #185282;
+      --bg-page: #F4F7FB;
+      --bg-card: #FFFFFF;
+      --border-color: #E4EAF1;
+      --border-light: #F0F4F8;
+      --text-main: #1D2939;
+      --text-secondary: #667085;
+      --text-muted: #8E9BAE;
+
+      --risk-critical: #B42318;
+      --risk-critical-bg: #FEE4E2;
+      --risk-high: #C75B12;
+      --risk-high-bg: #FEF0C7;
+      --risk-medium: #B7791F;
+      --risk-medium-bg: #FEF7C3;
+      --risk-low: #16836B;
+      --risk-low-bg: #D1FADF;
+
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.08);
+      font-synthesis: none;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--bg-page);
+      color: var(--text-main);
+      overflow: hidden;
+      /* No page-level scroll on desktop */
+    }
+
+    /* Top Application Header */
+    header.app-header {
+      height: 54px;
+      padding: 0 24px;
+      color: #fff;
+      background: var(--header-bg);
+      border-bottom: 2px solid #2B5784;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .header-branding {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .header-branding h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: #FFFFFF;
+    }
+
+    .header-branding p {
+      font-size: 12px;
+      color: #B0C4DE;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+    }
+
+    .meta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 4px;
+      color: #E2E8F0;
+    }
+
+    .meta-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #34D399;
+    }
+
+    /* Main Container (Two-column layout) */
+    .app-main {
+      height: calc(100vh - 54px);
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* Left Sidebar: Customer Explorer */
+    .sidebar {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .sidebar-header {
+      padding: 12px 14px 8px;
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+      background: #FAFCFE;
+    }
+
+    .sidebar-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar-count {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: #EEF2F6;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    /* Filter Controls in Sidebar */
+    .sidebar-filters {
+      display: grid;
+      gap: 6px;
+    }
+
+    .search-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 32px;
+      padding: 0 28px 0 8px;
+      font-size: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      background: #FFF;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary-action);
+      box-shadow: 0 0 0 2px rgba(33, 106, 165, 0.15);
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 6px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 2px;
+      display: none;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .filter-select {
+      height: 28px;
+      padding: 0 6px;
+      font-size: 11px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      background: #FFF;
+      color: var(--text-main);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .filter-select:focus {
+      border-color: var(--primary-action);
+    }
+
+    /* Customer Table in Sidebar */
+    .table-container {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .customer-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    .customer-table th {
+      position: sticky;
+      top: 0;
+      background: #F8FAFC;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-align: left;
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 1;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .customer-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .customer-row {
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .customer-row:hover {
+      background: #F0F7FF;
+    }
+
+    .customer-row.selected {
+      background: #E4F0FB;
+      border-left: 3px solid var(--primary-action);
+      font-weight: 600;
+    }
+
+    .action-text {
+      font-size: 10.5px;
+      color: var(--text-secondary);
+      max-width: 110px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Risk Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-critical {
+      background: var(--risk-critical-bg);
+      color: var(--risk-critical);
+    }
+
+    .badge-high {
+      background: var(--risk-high-bg);
+      color: var(--risk-high);
+    }
+
+    .badge-medium {
+      background: var(--risk-medium-bg);
+      color: var(--risk-medium);
+    }
+
+    .badge-low {
+      background: var(--risk-low-bg);
+      color: var(--risk-low);
+    }
+
+    .badge-neutral {
+      background: #EDF2F7;
+      color: #4A5568;
+    }
+
+    /* Right Panel: Customer Risk Workspace */
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+      background: var(--bg-page);
+    }
+
+    /* Workspace Top Action Bar */
+    .workspace-topbar {
+      height: 48px;
+      padding: 0 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .customer-header-info {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .customer-headline {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--header-bg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .customer-subline {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+    }
+
+    .btn-assess {
+      height: 32px;
+      padding: 0 14px;
+      background: var(--primary-action);
+      color: #FFF;
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, opacity 0.15s;
+    }
+
+    .btn-assess:hover:not(:disabled) {
+      background: var(--primary-action-hover);
+    }
+
+    .btn-assess:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #FFF;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Tabs Navigation Bar */
+    .tab-bar {
+      height: 38px;
+      padding: 0 20px;
+      background: #F9FAFC;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      padding: 0 16px;
+      height: 100%;
+      border: none;
+      background: transparent;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--primary-action);
+      font-weight: 700;
+    }
+
+    .tab-btn.active::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--primary-action);
+    }
+
+    /* Tab Content Bounded Scroll Area */
+    .tab-viewport {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 24px;
+      min-height: 0;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Cards and Containers */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 7px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--header-bg);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Hero Risk Summary Card (Visual Centrepiece) */
+    .hero-risk-card {
+      background: linear-gradient(180deg, #FFFFFF 0%, #FAFCFF 100%);
+      border: 1.5px solid #D6E4F0;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hero-grade-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-grade-badge {
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-pred-tag {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .hero-pred-tag span.yes {
+      color: var(--risk-critical);
+      font-weight: 700;
+    }
+
+    .hero-pred-tag span.no {
+      color: var(--risk-low);
+      font-weight: 700;
+    }
+
+    .hero-action-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .hero-action-badge {
+      background: #E8F1F8;
+      color: #174E75;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 11.5px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Hero Probability Display */
+    .hero-prob-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 20px;
+      margin: 8px 0;
+    }
+
+    .hero-prob-number {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--header-bg);
+      line-height: 1;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-prob-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hero-prob-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .prob-bar-track {
+      width: 100%;
+      height: 8px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .prob-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease-out;
+    }
+
+    .prob-bar-threshold {
+      position: absolute;
+      left: 30%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #475569;
+    }
+
+    .hero-note {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      line-height: 1.45;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 6px;
+    }
+
+    /* Narrative Section: Customer Risk Assessment */
+    .assessment-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 7px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+
+    .assessment-narrative {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #2D3748;
+      white-space: pre-line;
+    }
+
+    .assessment-empty {
+      padding: 18px;
+      text-align: center;
+      background: #F8FAFC;
+      border: 1px dashed #CBD5E1;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-size: 12.5px;
+    }
+
+    /* KPI Grid Snapshot */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .kpi-cell {
+      background: #FFF;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    .kpi-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 3px;
+    }
+
+    .kpi-val {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--header-bg);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Tags Wrap */
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .flag-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--risk-critical-bg);
+      color: var(--risk-critical);
+      border: 1px solid rgba(180, 35, 24, 0.2);
+    }
+
+    /* Clean Styled Data Tables */
+    .data-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .data-table th {
+      background: #F8FAFC;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .data-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-main);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr.row-active-risk {
+      background: #FFFDF9;
+    }
+
+    /* Grouped Grid for Customer Profile */
+    .profile-sections-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .attr-list {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 12px;
+      row-gap: 6px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .attr-name {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .attr-value {
+      color: var(--text-main);
+      font-weight: 600;
+      text-align: right;
+    }
+
+    /* Enhanced Policy & Evidence Visuals */
+    .policy-accordion {
+      border: 1px solid var(--border-color);
+      border-radius: 7px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      background: #FFFFFF;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .policy-accordion:hover {
+      border-color: #B0C4DE;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .policy-accordion summary {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--header-bg);
+      background: #F8FAFD;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      transition: background 0.15s ease;
+    }
+
+    .policy-accordion[open] summary {
+      border-bottom: 1px solid var(--border-color);
+      background: #EDF3F9;
+    }
+
+    .policy-summary-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .policy-summary-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .policy-body {
+      padding: 14px 16px;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--text-main);
+      background: #FFFFFF;
+    }
+
+    /* Policy Formatted Typography & Inline Badges */
+    .policy-h1 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--header-bg);
+      margin: 12px 0 8px 0;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .policy-h2 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1E3A8A;
+      margin: 10px 0 6px 0;
+    }
+
+    .policy-h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+      margin: 8px 0 4px 0;
+    }
+
+    .policy-para {
+      margin-bottom: 8px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #334155;
+    }
+
+    .policy-list {
+      margin: 6px 0 10px 18px;
+      padding: 0;
+      list-style-type: disc;
+    }
+
+    .policy-list li {
+      margin-bottom: 5px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #334155;
+    }
+
+    .policy-inline-code {
+      background: #F1F5F9;
+      color: #0F172A;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: Consolas, "Cascadia Code", monospace;
+      font-size: 11px;
+      border: 1px solid #E2E8F0;
+    }
+
+    .badge-policy {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+      font-weight: 700;
+      font-size: 10.5px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+      display: inline-block;
+    }
+
+    .badge-logic {
+      background: #F5F3FF;
+      color: #6D28D9;
+      border: 1px solid #DDD6FE;
+      font-weight: 700;
+      font-size: 10.5px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+      display: inline-block;
+    }
+
+    .policy-divider {
+      border: none;
+      border-top: 1px solid var(--border-color);
+      margin: 12px 0;
+    }
+
+    /* Policy Formatted Data Tables */
+    .policy-table-wrapper {
+      margin: 10px 0 14px 0;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .policy-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      background: #FFFFFF;
+    }
+
+    .policy-table th {
+      background: #F8FAFC;
+      color: #475569;
+      font-weight: 600;
+      text-align: left;
+      padding: 7px 10px;
+      border-bottom: 1.5px solid var(--border-color);
+      font-size: 11px;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+
+    .policy-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border-light);
+      color: #1E293B;
+      vertical-align: top;
+      line-height: 1.45;
+    }
+
+    .policy-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .policy-table tr:nth-child(even) {
+      background: #FAFBFD;
+    }
+
+    .policy-table tr:hover {
+      background: #F1F5F9;
+    }
+
+    /* Citation Audit Evidence Card */
+    .citation-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 7px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .citation-header {
+      background: #F8FAFC;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .citation-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .citation-id-tag {
+      background: var(--header-bg);
+      color: #FFF;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+    }
+
+    .citation-title-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .citation-meta-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .citation-content {
+      padding: 12px 14px;
+      background: #FCFDFE;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1200px) {
+      .kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app-main {
+        grid-template-columns: 280px 1fr;
+      }
+
+      .profile-sections-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+
+      html,
+      body {
+        overflow: auto;
+        height: auto;
+      }
+
+      .app-main {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+      }
+
+      .sidebar {
+        height: 350px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .workspace {
+        height: auto;
+      }
+
+      .tab-viewport {
+        height: auto;
+        overflow: visible;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 1. Application Top Header -->
+  <header class="app-header">
+    <div class="header-branding">
+      <h1>Early NPA Risk Review</h1>
+      <p>SAS-powered customer risk predictions, financial indicators and evidence-based assessments.</p>
+    </div>
+    <div class="header-meta">
+      <div class="meta-badge" title="Scoring Dataset Population">
+        <span class="dot"></span>
+        <span id="header-data-status">Scoring Data: 2,000 Live Accounts</span>
+      </div>
+      <div class="meta-badge" id="header-run-status" title="SAS Model Studio Champion Execution">
+        SAS Champion: RUN_20261111_01
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. Main Two-Column Application Layout -->
+  <main class="app-main">
+
+    <!-- LEFT PANEL: Customer Explorer -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title-row">
+          <span class="sidebar-title">Scored Customers</span>
+          <span class="sidebar-count" id="sidebar-count">2,000 Total</span>
+        </div>
+        <div class="sidebar-filters">
+          <div class="search-wrap">
+            <input type="text" id="search-input" class="search-input" placeholder="Search Customer ID or Action…"
+              autocomplete="off">
+            <button id="search-clear" class="search-clear" title="Clear search">✕</button>
+          </div>
+          <div class="filter-grid">
+            <select id="grade-filter" class="filter-select">
+              <option value="">All Risk Grades</option>
+              <option value="CRITICAL">Critical Risk</option>
+              <option value="HIGH">High Risk</option>
+              <option value="MEDIUM">Medium Risk</option>
+              <option value="LOW">Low Risk</option>
+            </select>
+            <select id="class-filter" class="filter-select">
+              <option value="">All Predictions</option>
+              <option value="1">Predicted NPA</option>
+              <option value="0">Not Predicted NPA</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container" id="sidebar-table-container">
+        <table class="customer-table">
+          <thead>
+            <tr>
+              <th style="width: 75px;">Risk Grade</th>
+              <th style="width: 85px;">Customer ID</th>
+              <th>Next Action</th>
+            </tr>
+          </thead>
+          <tbody id="customer-table-body">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+        <div id="no-results-msg"
+          style="display: none; padding: 20px; text-align: center; font-size: 12px; color: var(--text-secondary);">
+          No matching customers found.
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT PANEL: Customer Risk Workspace -->
+    <section class="workspace">
+      <!-- Top Action Bar -->
+      <div class="workspace-topbar">
+        <div class="customer-header-info">
+          <div class="customer-headline" id="ws-customer-title">
+            <span>Customer 10001</span>
+            <span class="badge badge-neutral" id="ws-loan-id" style="font-size: 11px; font-weight: normal;">Loan:
+              5010001</span>
+          </div>
+          <div class="customer-subline" id="ws-scoring-meta">
+            Scored by SAS Model Studio | Run: RUN_20261111_01 | Observation DPD: 0
+          </div>
+        </div>
+        <div>
+          <button id="btn-generate-assessment" class="btn-assess">
+            <div class="spinner" id="btn-spinner"></div>
+            <span id="btn-text">Generate AI Assessment</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Segmented Navigation Tabs -->
+      <nav class="tab-bar">
+        <button class="tab-btn active" data-tab="tab-overview">Overview</button>
+        <button class="tab-btn" data-tab="tab-drivers">Risk Drivers</button>
+        <button class="tab-btn" data-tab="tab-details">Customer & Repayment</button>
+        <button class="tab-btn" data-tab="tab-policies">Policies & Evidence</button>
+      </nav>
+
+      <!-- Tab Content Area -->
+      <div class="tab-viewport">
+
+        <!-- ==================== TAB 1: OVERVIEW ==================== -->
+        <div id="tab-overview" class="tab-pane active">
+
+          <!-- 1. Primary Model Risk Summary (The Centrepiece) -->
+          <div class="hero-risk-card" id="hero-risk-card">
+            <div class="hero-header-row">
+              <div class="hero-grade-box">
+                <span class="badge hero-grade-badge badge-critical" id="hero-grade-badge">CRITICAL RISK</span>
+                <span class="hero-pred-tag" id="hero-pred-tag">Predicted future NPA risk within next 12 months: <span
+                    class="yes">YES</span></span>
+              </div>
+              <div class="hero-action-box">
+                Recommended Action:
+                <span class="hero-action-badge" id="hero-action-badge">RECOVERY TEAM</span>
+              </div>
+            </div>
+
+            <div class="hero-prob-row">
+              <div class="hero-prob-number" id="hero-prob-val">66.20%</div>
+              <div class="hero-prob-meta">
+                <div class="hero-prob-label">SAS Model-Estimated Default Probability (Operational Cutoff: 30.0%)</div>
+                <div class="prob-bar-track">
+                  <div class="prob-bar-threshold" title="Classification Cutoff (30%)"></div>
+                  <div class="prob-bar-fill" id="hero-prob-bar" style="width: 66.2%; background: var(--risk-critical);">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-note">
+              <strong>Notice:</strong> The borrower's active loan is currently performing ($DPD = 0$). This probability
+              represents future 12-month default risk estimated by the SAS Model Studio champion logistic regression
+              model.
+            </div>
+          </div>
+
+          <!-- 2. AI-Assisted Customer Risk Assessment Narrative -->
+          <div class="assessment-box">
+            <div class="card-title">
+              <span>Customer Risk Assessment</span>
+              <span id="assessment-status-badge" class="badge badge-neutral" style="font-size: 10px;">Audit Ready</span>
+            </div>
+            <div id="assessment-narrative-container">
+              <p class="assessment-narrative" id="assessment-narrative-text">
+                Select a customer and click <strong>Generate AI Assessment</strong> to synthesize SAS risk factors and
+                cross-examine banking policies.
+              </p>
+            </div>
+          </div>
+
+          <!-- 3. Key Financial Snapshot Grid -->
+          <div class="kpi-grid">
+            <div class="kpi-cell">
+              <div class="kpi-label">Monthly Income</div>
+              <div class="kpi-val" id="snap-income">₹54,000.00</div>
+            </div>
+            <div class="kpi-cell">
+              <div class="kpi-label">Monthly EMI Due</div>
+              <div class="kpi-val" id="snap-emi">₹28,500.00</div>
+            </div>
+            <div class="kpi-cell">
+              <div class="kpi-label">Sanctioned Principal</div>
+              <div class="kpi-val" id="snap-sanctioned">₹5,00,000.00</div>
+            </div>
+            <div class="kpi-cell">
+              <div class="kpi-label">Outstanding Balance</div>
+              <div class="kpi-val" id="snap-outstanding">₹4,40,000.00</div>
+            </div>
+            <div class="kpi-cell">
+              <div class="kpi-label">Credit Bureau Score</div>
+              <div class="kpi-val" id="snap-bureau">615</div>
+            </div>
+            <div class="kpi-cell">
+              <div class="kpi-label">Credit Utilization</div>
+              <div class="kpi-val" id="snap-utilization">84.2%</div>
+            </div>
+          </div>
+
+          <!-- 4. Top Active Risk Triggers -->
+          <div class="card">
+            <div class="card-title">
+              <span>Active Pre-Score Risk Triggers & Prototype Reasons</span>
+              <span class="badge badge-neutral" id="snap-flag-count">2 Active Flags</span>
+            </div>
+            <div class="tag-cloud" id="snap-active-flags-cloud">
+              <!-- Active tag pills -->
+            </div>
+            <div style="margin-top: 10px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;"
+              id="snap-reasons-summary">
+              <!-- Risk reasons -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==================== TAB 2: RISK DRIVERS ==================== -->
+        <div id="tab-drivers" class="tab-pane">
+
+          <!-- Distinction between Model Grade and Rule Grade -->
+          <div class="card" style="border-left: 3px solid var(--primary-action);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <strong style="font-size: 13px; color: var(--header-bg);">Dual-Grading System Architecture:</strong>
+                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">
+                  Distinguishing predictive econometric likelihood from prototype rule-based warning counters.
+                </div>
+              </div>
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div style="text-align: right;">
+                  <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">SAS Model Risk
+                    Grade</div>
+                  <span class="badge badge-critical" id="drivers-model-grade">CRITICAL (66.2%)</span>
+                </div>
+                <div style="border-left: 1px solid var(--border-color); height: 24px;"></div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Internal Rule-Based
+                    Grade</div>
+                  <span class="badge badge-high" id="drivers-rule-grade">HIGH (4 Flags)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Full 11 Risk Indicators Table -->
+          <div class="card">
+            <div class="card-title">Comprehensive Risk Indicators & Rule Threshold Evaluation</div>
+            <div class="data-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 170px;">Risk Indicator</th>
+                    <th style="width: 80px;">Status</th>
+                    <th style="width: 90px;">Observed</th>
+                    <th style="width: 110px;">Rule Threshold</th>
+                    <th>Analytical Explanation</th>
+                    <th style="width: 180px;">Evidence / Category</th>
+                  </tr>
+                </thead>
+                <tbody id="risk-indicators-table-body">
+                  <!-- Dynamically populated 11 indicators -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Stored SAS Reason Explanations -->
+          <div class="card">
+            <div class="card-title">Stored SAS Prototype Decision Reasons (Ordered Priority)</div>
+            <div style="display: grid; gap: 8px; font-size: 12px; line-height: 1.5;">
+              <div style="padding: 6px 10px; background: #F8FAFC; border-radius: 4px;">
+                <strong>Priority 1 (Primary Factor):</strong> <span id="reason-slot-1">High debt-to-income ratio.</span>
+              </div>
+              <div style="padding: 6px 10px; background: #F8FAFC; border-radius: 4px;">
+                <strong>Priority 2 (Secondary Factor):</strong> <span id="reason-slot-2">Secondary risk indicators
+                  within acceptable range.</span>
+              </div>
+              <div style="padding: 6px 10px; background: #F8FAFC; border-radius: 4px;">
+                <strong>Priority 3 (Additional Factor):</strong> <span id="reason-slot-3">Payment behaviour is
+                  relatively stable.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==================== TAB 3: CUSTOMER & REPAYMENT ==================== -->
+        <div id="tab-details" class="tab-pane">
+
+          <div class="profile-sections-grid">
+            <!-- Panel 1: Borrower Profile -->
+            <div class="card">
+              <div class="card-title">Borrower Demographic Profile</div>
+              <div class="attr-list">
+                <span class="attr-name">Customer ID:</span> <span class="attr-value" id="prof-cid">10001</span>
+                <span class="attr-name">Age & Gender:</span> <span class="attr-value" id="prof-age-gender">42 yrs /
+                  Male</span>
+                <span class="attr-name">Marital Status:</span> <span class="attr-value" id="prof-marital">Married</span>
+                <span class="attr-name">Occupation:</span> <span class="attr-value" id="prof-occupation">Salaried
+                  Professional</span>
+                <span class="attr-name">City Type:</span> <span class="attr-value" id="prof-city">Metro</span>
+                <span class="attr-name">Employment Tenure:</span> <span class="attr-value" id="prof-tenure">8.5
+                  years</span>
+                <span class="attr-name">Monthly Disposable Income:</span> <span class="attr-value" id="prof-income"
+                  style="color: var(--risk-low); font-weight: 700;">₹54,000.00</span>
+              </div>
+            </div>
+
+            <!-- Panel 2: Current Loan Account -->
+            <div class="card">
+              <div class="card-title">Active Loan Facility</div>
+              <div class="attr-list">
+                <span class="attr-name">Loan ID:</span> <span class="attr-value" id="loan-id">5010001</span>
+                <span class="attr-name">Loan Product Type:</span> <span class="attr-value" id="loan-type">Personal
+                  Loan</span>
+                <span class="attr-name">Sanctioned Principal:</span> <span class="attr-value"
+                  id="loan-sanctioned">₹5,00,000.00</span>
+                <span class="attr-name">Outstanding Balance:</span> <span class="attr-value"
+                  id="loan-outstanding">₹4,40,000.00</span>
+                <span class="attr-name">Monthly EMI Due:</span> <span class="attr-value" id="loan-emi">₹28,500.00</span>
+                <span class="attr-name">Interest Rate:</span> <span class="attr-value" id="loan-rate">12.50%</span>
+                <span class="attr-name">Recorded Collateral Value:</span> <span class="attr-value"
+                  id="loan-collateral">₹0.00 (Unsecured)</span>
+                <span class="attr-name">Loan Age / Remaining:</span> <span class="attr-value" id="loan-duration">14 mos
+                  / 22 mos</span>
+                <span class="attr-name">Current Account Status:</span> <span class="attr-value"
+                  style="color: var(--risk-low); font-weight: 700;">Active & Performing (0 DPD)</span>
+              </div>
+            </div>
+
+            <!-- Panel 3: Credit Exposure & Cash Flow -->
+            <div class="card">
+              <div class="card-title">Credit Exposure & Cash Flow Behavior</div>
+              <div class="attr-list">
+                <span class="attr-name">Credit Bureau Score:</span> <span class="attr-value"
+                  id="bureau-score">615</span>
+                <span class="attr-name">Total Bureau Credit Limit:</span> <span class="attr-value"
+                  id="bureau-limit">₹2,00,000.00</span>
+                <span class="attr-name">Total Credit Balance Drawn:</span> <span class="attr-value"
+                  id="bureau-balance">₹1,68,400.00</span>
+                <span class="attr-name">Revolving Credit Utilization:</span> <span class="attr-value"
+                  id="bureau-util">84.2%</span>
+                <span class="attr-name">Debt-to-Income (DTI):</span> <span class="attr-value"
+                  id="bureau-dti">61.2%</span>
+                <span class="attr-name">Loan-to-Value (LTV):</span> <span class="attr-value" id="bureau-ltv">N/A</span>
+                <span class="attr-name">12M Account Debits / Credits:</span> <span class="attr-value"
+                  id="bureau-cashflow">₹5.8L / ₹6.4L</span>
+                <span class="attr-name">Cash Flow Stability:</span> <span class="attr-value"
+                  id="bureau-cf-status">Stable</span>
+              </div>
+            </div>
+
+            <!-- Panel 4: Historical Closed Facilities -->
+            <div class="card">
+              <div class="card-title">Historical Closed Facilities (Prior Loans)</div>
+              <div class="attr-list">
+                <span class="attr-name">Prior Record Availability:</span> <span class="attr-value"
+                  id="hist-avail">Available</span>
+                <span class="attr-name">Historical NPA Default:</span> <span class="attr-value" id="hist-npa">No Prior
+                  Default</span>
+                <span class="attr-name">Prior Missed Payment Count:</span> <span class="attr-value"
+                  id="hist-missed-cnt">0</span>
+                <span class="attr-name">Max / Avg Historical DPD:</span> <span class="attr-value" id="hist-dpd">0 / 0.0
+                  days</span>
+                <span class="attr-name">Longest Missed Installment Streak:</span> <span class="attr-value"
+                  id="hist-streak">0 months</span>
+                <span class="attr-name">Historical Resolution Status:</span> <span class="attr-value"
+                  id="hist-status">Clean Closure</span>
+              </div>
+              <div
+                style="font-size: 10.5px; color: var(--text-muted); margin-top: 8px; border-top: 1px dashed var(--border-color); padding-top: 4px;">
+                * Historical metrics describe prior closed credit facilities. The customer's current active loan has
+                zero missed payments.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==================== TAB 4: POLICIES & EVIDENCE ==================== -->
+        <div id="tab-policies" class="tab-pane">
+
+          <!-- Recommended Action Explanation Card -->
+          <div class="card" style="border-left: 3px solid var(--primary-action);">
+            <div class="card-title">Recommended Action Protocol & Next Steps</div>
+            <div id="policy-action-explanation" style="font-size: 13px; line-height: 1.6; color: var(--text-main);">
+              Based on the SAS Model Studio classification, execute prescribed operational protocol.
+            </div>
+          </div>
+
+          <!-- Applicable Policies List -->
+          <div class="card">
+            <div class="card-title">Applicable Credit Risk Management Policies</div>
+            <div id="policies-accordion-list">
+              <!-- Dynamic Accordion list -->
+            </div>
+          </div>
+
+          <!-- Detailed Evidence & Citations -->
+          <div class="card">
+            <div class="card-title">Supporting Policy Citations & Audit Proof</div>
+            <div id="citations-container">
+              <!-- Citations -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Application Logic -->
+  <script>
+    // State Store
+    let allCustomers = [];
+    let selectedCustomerId = null;
+    let selectedCustomerData = null;
+    const assessmentCache = new Map(); // Caches AI summaries per customer_id
+
+    // DOM Elements
+    const searchInput = document.getElementById("search-input");
+    const searchClear = document.getElementById("search-clear");
+    const gradeFilter = document.getElementById("grade-filter");
+    const classFilter = document.getElementById("class-filter");
+    const customerTableBody = document.getElementById("customer-table-body");
+    const sidebarCount = document.getElementById("sidebar-count");
+    const noResultsMsg = document.getElementById("no-results-msg");
+    const btnAssess = document.getElementById("btn-generate-assessment");
+    const btnSpinner = document.getElementById("btn-spinner");
+    const btnText = document.getElementById("btn-text");
+
+    // Formatters
+    function getRiskBadgeHtml(grade) {
+      const g = (grade || "").toUpperCase();
+      let cls = "badge-neutral";
+      if (g === "CRITICAL") cls = "badge-critical";
+      else if (g === "HIGH") cls = "badge-high";
+      else if (g === "MEDIUM") cls = "badge-medium";
+      else if (g === "LOW") cls = "badge-low";
+      return `<span class="badge ${cls}">${grade || "N/A"}</span>`;
+    }
+
+    // Tab Switching
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        const targetId = btn.getAttribute("data-tab");
+        const targetPane = document.getElementById(targetId);
+        if (targetPane) targetPane.classList.add("active");
+      });
+    });
+
+    // 1. Initial Load: Fetch All Scored Customers
+    async function loadCustomers() {
+      try {
+        const res = await fetch("/api/customers");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to load customers.");
+
+        allCustomers = data.customers || [];
+        sidebarCount.textContent = `${allCustomers.length.toLocaleString()} Total`;
+
+        if (data.total_count) {
+          document.getElementById("header-data-status").textContent = `Scoring Data: ${data.total_count.toLocaleString()} Live Accounts`;
+        }
+        if (data.scoring_run_id) {
+          document.getElementById("header-run-status").textContent = `SAS Champion: ${data.scoring_run_id}`;
+        }
+
+        renderCustomerTable();
+
+        // Auto-select first customer
+        if (allCustomers.length > 0) {
+          selectCustomer(allCustomers[0].customer_id);
+        }
+      } catch (err) {
+        sidebarCount.textContent = "Error";
+        noResultsMsg.textContent = "Error loading scored customers: " + err.message;
+        noResultsMsg.style.display = "block";
+      }
+    }
+
+    // 2. Render Customer Sidebar Table
+    function renderCustomerTable() {
+      const query = searchInput.value.trim().toLowerCase();
+      const grade = gradeFilter.value.trim().toUpperCase();
+      const pClass = classFilter.value.trim();
+
+      const filtered = allCustomers.filter(c => {
+        const matchesQuery = !query ||
+          String(c.customer_id).includes(query) ||
+          String(c.recommended_action || "").toLowerCase().includes(query);
+        const matchesGrade = !grade || (c.model_risk_grade && c.model_risk_grade.toUpperCase() === grade);
+        const matchesClass = !pClass || String(c.model_predicted_class) === pClass;
+        return matchesQuery && matchesGrade && matchesClass;
+      });
+
+      sidebarCount.textContent = `Showing ${filtered.length.toLocaleString()} of ${allCustomers.length.toLocaleString()}`;
+      customerTableBody.innerHTML = "";
+
+      if (filtered.length === 0) {
+        noResultsMsg.style.display = "block";
+        return;
+      }
+      noResultsMsg.style.display = "none";
+
+      filtered.forEach(c => {
+        const tr = document.createElement("tr");
+        tr.className = "customer-row" + (c.customer_id === selectedCustomerId ? " selected" : "");
+        tr.id = `cust-row-${c.customer_id}`;
+        tr.innerHTML = `
+          <td>${getRiskBadgeHtml(c.model_risk_grade)}</td>
+          <td style="font-weight: 600; color: var(--header-bg);">${c.customer_id}</td>
+          <td class="action-text" title="${c.recommended_action || ''}">${c.recommended_action || 'NORMAL MONITORING'}</td>
+        `;
+        tr.addEventListener("click", () => selectCustomer(c.customer_id));
+        customerTableBody.appendChild(tr);
+      });
+    }
+
+    // 3. Select a Customer
+    async function selectCustomer(cid) {
+      if (selectedCustomerId === cid && selectedCustomerData) return;
+      selectedCustomerId = cid;
+
+      // Update table highlight
+      document.querySelectorAll(".customer-row").forEach(r => r.classList.remove("selected"));
+      const selectedRow = document.getElementById(`cust-row-${cid}`);
+      if (selectedRow) selectedRow.classList.add("selected");
+
+      // Update Workspace Header immediately
+      document.getElementById("ws-customer-title").innerHTML = `
+        <span>Customer ${cid}</span>
+        <span class="badge badge-neutral" id="ws-loan-id" style="font-size: 11px; font-weight: normal;">Loading…</span>
+      `;
+
+      try {
+        // Fetch instant in-memory profile
+        const res = await fetch(`/api/customer?id=${cid}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Customer data not found.");
+
+        selectedCustomerData = data.customer;
+        renderCustomerWorkspace(selectedCustomerData);
+
+        // Check if an AI assessment is cached for this customer
+        if (assessmentCache.has(cid)) {
+          renderAssessment(assessmentCache.get(cid));
+        } else {
+          // Reset narrative to inviting placeholder
+          document.getElementById("assessment-narrative-text").innerHTML =
+            `AI assessment has not been generated for Customer ${cid} yet.<br>Click <strong>Generate AI Assessment</strong> above to run RAG policy retrieval and generate evidence-based narrative.`;
+          document.getElementById("assessment-status-badge").textContent = "Ready to Generate";
+          document.getElementById("assessment-status-badge").className = "badge badge-neutral";
+          renderPolicyDefaults(selectedCustomerData);
+        }
+      } catch (err) {
+        console.error("Failed to load customer profile:", err);
+      }
+    }
+
+    // 4. Render Customer Workspace UI Components
+    function renderCustomerWorkspace(c) {
+      // Header
+      document.getElementById("ws-customer-title").innerHTML = `
+        <span>Customer ${c.customer_id}</span>
+        <span class="badge badge-neutral" id="ws-loan-id" style="font-size: 11px; font-weight: normal;">Loan: ${c.loan_details.loan_id}</span>
+      `;
+      document.getElementById("ws-scoring-meta").textContent =
+        `Scored by SAS Model Studio | Run: ${c.sas_model_results.scoring_run_id} | ${c.loan_details.current_loan_status}`;
+
+      // Hero Risk Card
+      const riskGrade = c.sas_model_results.model_risk_grade;
+      const probVal = c.sas_model_results.model_event_probability_raw;
+      const isPredictedNpa = c.sas_model_results.model_predicted_class_raw === 1;
+
+      const heroBadge = document.getElementById("hero-grade-badge");
+      heroBadge.textContent = `${riskGrade} RISK`;
+      heroBadge.className = `badge hero-grade-badge badge-${riskGrade.toLowerCase()}`;
+
+      document.getElementById("hero-pred-tag").innerHTML = `
+        Predicted future NPA risk within next 12 months: <span class="${isPredictedNpa ? 'yes' : 'no'}">${isPredictedNpa ? 'YES' : 'NO'}</span>
+      `;
+      document.getElementById("hero-action-badge").textContent = c.sas_model_results.recommended_action;
+
+      document.getElementById("hero-prob-val").textContent = c.sas_model_results.model_event_probability;
+
+      const probPercent = Math.min(100, Math.max(0, probVal * 100));
+      const heroBar = document.getElementById("hero-prob-bar");
+      heroBar.style.width = `${probPercent}%`;
+      heroBar.style.background = isPredictedNpa ? "var(--risk-critical)" : "var(--risk-low)";
+
+      // Snapshot Grid
+      document.getElementById("snap-income").textContent = c.demographics.monthly_income;
+      document.getElementById("snap-emi").textContent = c.loan_details.emi_amount;
+      document.getElementById("snap-sanctioned").textContent = c.loan_details.sanctioned_amount;
+      document.getElementById("snap-outstanding").textContent = c.loan_details.outstanding_amount;
+      document.getElementById("snap-bureau").textContent = c.bureau_and_transactions.credit_score;
+      document.getElementById("snap-utilization").textContent = c.financial_ratios.credit_utilization;
+
+      // Active flags
+      const activeFlags = c.internal_risk_flags.active_flags || [];
+      document.getElementById("snap-flag-count").textContent = `${activeFlags.length} Active Rule Flag(s)`;
+      const cloud = document.getElementById("snap-active-flags-cloud");
+      cloud.innerHTML = "";
+      if (activeFlags.length === 0) {
+        cloud.innerHTML = '<span class="badge badge-low" style="font-size: 11px;">No Active Pre-Score Warning Flags</span>';
+      } else {
+        activeFlags.forEach(f => {
+          const span = document.createElement("span");
+          span.className = "flag-pill";
+          span.textContent = `${f.label} (${f.observed})`;
+          cloud.appendChild(span);
+        });
+      }
+
+      // Snapshot Reasons
+      document.getElementById("snap-reasons-summary").innerHTML = `
+        <div><strong>Primary Indicator:</strong> ${c.risk_reasons.risk_reason_1 || 'No major primary indicator.'}</div>
+        <div style="margin-top: 3px;"><strong>Secondary Indicator:</strong> ${c.risk_reasons.risk_reason_2 || 'Within normal thresholds.'}</div>
+      `;
+
+      // TAB 2: Risk Drivers
+      document.getElementById("drivers-model-grade").textContent = `${c.sas_model_results.model_risk_grade} (${c.sas_model_results.model_event_probability})`;
+      document.getElementById("drivers-model-grade").className = `badge badge-${c.sas_model_results.model_risk_grade.toLowerCase()}`;
+      document.getElementById("drivers-rule-grade").textContent = `${c.internal_risk_flags.rule_grade} (${c.internal_risk_flags.flag_count} Flags)`;
+      document.getElementById("drivers-rule-grade").className = `badge badge-${c.internal_risk_flags.rule_grade.toLowerCase()}`;
+
+      // Populate 11 indicators
+      const tbody = document.getElementById("risk-indicators-table-body");
+      tbody.innerHTML = "";
+      const indicators = c.all_risk_indicators || [];
+      // Sort: active first
+      const sortedInds = [...indicators].sort((a, b) => (b.is_active ? 1 : 0) - (a.is_active ? 1 : 0));
+      sortedInds.forEach(ind => {
+        const row = document.createElement("tr");
+        if (ind.is_active) row.className = "row-active-risk";
+        row.innerHTML = `
+          <td><strong>${ind.name}</strong></td>
+          <td>${ind.is_active ? '<span class="badge badge-critical">ACTIVE</span>' : '<span class="badge badge-low">PASS</span>'}</td>
+          <td><strong style="color: ${ind.is_active ? 'var(--risk-critical)' : 'inherit'}">${ind.observed}</strong></td>
+          <td style="color: var(--text-secondary);">${ind.threshold}</td>
+          <td>${ind.explanation}</td>
+          <td style="color: var(--text-secondary); font-size: 11px;">${ind.evidence}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Stored Reasons in Tab 2
+      document.getElementById("reason-slot-1").textContent = c.risk_reasons.risk_reason_1 || "None";
+      document.getElementById("reason-slot-2").textContent = c.risk_reasons.risk_reason_2 || "None";
+      document.getElementById("reason-slot-3").textContent = c.risk_reasons.risk_reason_3 || "None";
+
+      // TAB 3: Customer & Repayment Details
+      document.getElementById("prof-cid").textContent = c.customer_id;
+      document.getElementById("prof-age-gender").textContent = `${c.demographics.age} yrs / ${c.demographics.gender}`;
+      document.getElementById("prof-marital").textContent = c.demographics.marital_status;
+      document.getElementById("prof-occupation").textContent = c.demographics.occupation;
+      document.getElementById("prof-city").textContent = c.demographics.city_type;
+      document.getElementById("prof-tenure").textContent = `${c.demographics.employment_years} years`;
+      document.getElementById("prof-income").textContent = c.demographics.monthly_income;
+
+      document.getElementById("loan-id").textContent = c.loan_details.loan_id;
+      document.getElementById("loan-type").textContent = c.loan_details.loan_type;
+      document.getElementById("loan-sanctioned").textContent = c.loan_details.sanctioned_amount;
+      document.getElementById("loan-outstanding").textContent = c.loan_details.outstanding_amount;
+      document.getElementById("loan-emi").textContent = c.loan_details.emi_amount;
+      document.getElementById("loan-rate").textContent = c.loan_details.interest_rate;
+      document.getElementById("loan-collateral").textContent = c.loan_details.collateral_value;
+      document.getElementById("loan-duration").textContent = `${c.loan_details.loan_age_months} mos / ${c.loan_details.remaining_tenure} mos remaining`;
+
+      document.getElementById("bureau-score").textContent = c.bureau_and_transactions.credit_score;
+      document.getElementById("bureau-limit").textContent = c.bureau_and_transactions.total_credit_limit;
+      document.getElementById("bureau-balance").textContent = c.bureau_and_transactions.total_credit_balance;
+      document.getElementById("bureau-util").textContent = c.financial_ratios.credit_utilization;
+      document.getElementById("bureau-dti").textContent = c.financial_ratios.debt_to_income;
+      document.getElementById("bureau-ltv").textContent = c.financial_ratios.loan_to_value;
+      document.getElementById("bureau-cashflow").textContent = `${c.bureau_and_transactions.total_debit_transaction} / ${c.bureau_and_transactions.total_credit_transaction}`;
+      document.getElementById("bureau-cf-status").textContent = c.all_risk_indicators.find(i => i.id === 'unstable_cash_flow')?.observed || 'Stable';
+
+      document.getElementById("hist-avail").textContent = c.previous_loan_history.history_available;
+      document.getElementById("hist-npa").textContent = c.previous_loan_history.previous_npa_flag;
+      document.getElementById("hist-missed-cnt").textContent = c.previous_loan_history.prior_missed_payment_count;
+      document.getElementById("hist-dpd").textContent = `${c.previous_loan_history.prior_max_dpd} / ${c.previous_loan_history.prior_avg_dpd}`;
+      document.getElementById("hist-streak").textContent = c.previous_loan_history.max_consecutive_missed_months;
+      document.getElementById("hist-status").textContent = c.previous_loan_history.prior_resolution_status;
+    }
+
+    // 5. Generate AI Assessment (Calls POST /api/summary)
+    btnAssess.addEventListener("click", async () => {
+      if (!selectedCustomerId) return;
+
+      btnAssess.disabled = true;
+      btnSpinner.style.display = "inline-block";
+      btnText.textContent = "Generating assessment…";
+      document.getElementById("assessment-status-badge").textContent = "Synthesizing…";
+      document.getElementById("assessment-status-badge").className = "badge badge-neutral";
+
+      document.getElementById("assessment-narrative-text").innerHTML = `
+        <span style="color: var(--primary-action);">Retrieving banking policies from knowledge base and querying LLM for evidence-based assessment…</span>
+      `;
+
+      try {
+        const res = await fetch("/api/summary", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customer_id: selectedCustomerId })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Assessment generation failed.");
+
+        // Cache result
+        assessmentCache.set(selectedCustomerId, data);
+        renderAssessment(data);
+      } catch (err) {
+        document.getElementById("assessment-status-badge").textContent = "Generation Failed";
+        document.getElementById("assessment-status-badge").className = "badge badge-critical";
+        document.getElementById("assessment-narrative-text").innerHTML = `
+          <span style="color: var(--risk-critical); font-weight: 600;">Error: ${err.message}</span>
+          <br><button onclick="btnAssess.click()" style="margin-top: 8px; padding: 4px 8px; font-size: 11px; cursor: pointer;">Retry Assessment</button>
+        `;
+      } finally {
+        btnAssess.disabled = false;
+        btnSpinner.style.display = "none";
+        btnText.textContent = "Regenerate Assessment";
+      }
+    });
+
+    // Helper: Badge class for risk grades
+    function getRiskBadgeClass(grade) {
+      const g = (grade || "").toUpperCase();
+      if (g === "CRITICAL") return "badge-critical";
+      if (g === "HIGH") return "badge-high";
+      if (g === "MEDIUM") return "badge-medium";
+      if (g === "LOW") return "badge-low";
+      return "badge-neutral";
+    }
+
+    // Rich Markdown Formatter for Policy & Evidence Texts
+    function formatInlinePolicy(str) {
+      if (!str) return "";
+      let s = str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      s = s.replace(/`([^`]+)`/g, '<code class="policy-inline-code">$1</code>');
+      s = s.replace(/\b(POL-NPA-\d{3})\b/g, '<span class="badge-policy">$1</span>');
+      s = s.replace(/\b(LOG-NPA-\d{3})\b/g, '<span class="badge-logic">$1</span>');
+      return s;
+    }
+
+    function formatPolicyMarkdown(text) {
+      if (!text) return "";
+      const lines = text.split("\n");
+      let html = "";
+      let inTable = false;
+      let tableHeader = [];
+      let tableRows = [];
+      let inList = false;
+
+      function flushTable() {
+        if (!inTable) return;
+        if (tableHeader.length > 0 || tableRows.length > 0) {
+          html += '<div class="policy-table-wrapper"><table class="policy-table">';
+          if (tableHeader.length > 0) {
+            html += '<thead><tr>' + tableHeader.map(c => `<th>${formatInlinePolicy(c)}</th>`).join('') + '</tr></thead>';
+          }
+          if (tableRows.length > 0) {
+            html += '<tbody>';
+            tableRows.forEach(row => {
+              html += '<tr>' + row.map(c => `<td>${formatInlinePolicy(c)}</td>`).join('') + '</tr>';
+            });
+            html += '</tbody>';
+          }
+          html += '</table></div>';
+        }
+        inTable = false;
+        tableHeader = [];
+        tableRows = [];
+      }
+
+      function flushList() {
+        if (!inList) return;
+        html += '</ul>';
+        inList = false;
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const rawLine = lines[i];
+        const trimmed = rawLine.trim();
+
+        if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+          flushList();
+          const cells = trimmed.split("|").slice(1, -1).map(c => c.trim());
+          const isSep = cells.every(c => /^:?-+:?$/.test(c));
+          if (isSep) {
+            continue;
+          }
+          if (!inTable) {
+            inTable = true;
+            tableHeader = cells;
+          } else {
+            tableRows.push(cells);
+          }
+          continue;
+        } else {
+          flushTable();
+        }
+
+        if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+          if (!inList) {
+            inList = true;
+            html += '<ul class="policy-list">';
+          }
+          const itemText = trimmed.substring(2).trim();
+          html += `<li>${formatInlinePolicy(itemText)}</li>`;
+          continue;
+        } else {
+          flushList();
+        }
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed.startsWith("### ")) {
+          html += `<h6 class="policy-h3">${formatInlinePolicy(trimmed.substring(4))}</h6>`;
+        } else if (trimmed.startsWith("## ")) {
+          html += `<h5 class="policy-h2">${formatInlinePolicy(trimmed.substring(3))}</h5>`;
+        } else if (trimmed.startsWith("# ")) {
+          html += `<h4 class="policy-h1">${formatInlinePolicy(trimmed.substring(2))}</h4>`;
+        } else if (trimmed === "---") {
+          html += '<hr class="policy-divider">';
+        } else {
+          html += `<p class="policy-para">${formatInlinePolicy(trimmed)}</p>`;
+        }
+      }
+
+      flushTable();
+      flushList();
+      return html;
+    }
+
+    // Default Policy Reference State (Before AI synthesis)
+    function renderPolicyDefaults(c) {
+      if (!c) return;
+      const act = c.sas_model_results.recommended_action;
+      const grd = c.sas_model_results.model_risk_grade;
+      const prob = c.sas_model_results.model_event_probability;
+
+      document.getElementById("policy-action-explanation").innerHTML = `
+        <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Authoritative Protocol:</span>
+            <span class="badge ${getRiskBadgeClass(grd)}" style="font-size: 11px; padding: 3px 10px;">${act}</span>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted);">
+            Estimated Probability: ${prob} (${grd} RISK)
+          </div>
+        </div>
+        <p style="font-size: 12.5px; line-height: 1.55; color: var(--text-main);">
+          Under SAS Model Studio champion decision rules, accounts in the <strong>${grd}</strong> risk band require <strong>${act}</strong> protocol. Click <strong>Generate AI Assessment</strong> above to cross-reference this account against specific policy passages and generate an evidence-verified credit summary.
+        </p>
+      `;
+
+      // Show Core Reference Library
+      const policiesList = document.getElementById("policies-accordion-list");
+      policiesList.innerHTML = `
+        <div class="policy-accordion" style="margin-bottom: 8px;">
+          <summary>
+            <div class="policy-summary-left">
+              <span class="badge-policy">POL-NPA-001</span>
+              <span style="font-weight: 700; color: var(--header-bg);">Repayment Performance and Days Past Due (DPD)</span>
+            </div>
+            <div class="policy-summary-right"><span style="font-size: 10.5px; color: var(--text-muted);">Bands: 0 to &gt;90 DPD</span></div>
+          </summary>
+          <div class="policy-body">
+            <p class="policy-para">Monitors repayment performance using instalment due dates, amounts paid, and days past due. Defines review escalation criteria for sustained delays.</p>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Active SAS Rules: <span class="badge-logic">LOG-NPA-007</span> (avg_dpd &gt; 60), <span class="badge-logic">LOG-NPA-008</span> (max_dpd &gt; 90)</div>
+          </div>
+        </div>
+        <div class="policy-accordion" style="margin-bottom: 8px;">
+          <summary>
+            <div class="policy-summary-left">
+              <span class="badge-policy">POL-NPA-002</span>
+              <span style="font-weight: 700; color: var(--header-bg);">Payment Behaviour, Bounces and Repayment Capacity</span>
+            </div>
+            <div class="policy-summary-right"><span style="font-size: 10.5px; color: var(--text-muted);">Affordability Criteria</span></div>
+          </summary>
+          <div class="policy-body">
+            <p class="policy-para">Assesses payment discipline, bounce frequency, and debt-to-income limits. Reviews repayment trends across active facilities.</p>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Active SAS Rules: <span class="badge-logic">LOG-NPA-016</span> (DTI &gt; 50%), <span class="badge-logic">LOG-NPA-017</span> (Bounces &ge; 3), <span class="badge-logic">LOG-NPA-018</span> (Payment Trend)</div>
+          </div>
+        </div>
+        <div class="policy-accordion" style="margin-bottom: 8px;">
+          <summary>
+            <div class="policy-summary-left">
+              <span class="badge-policy">POL-NPA-003</span>
+              <span style="font-weight: 700; color: var(--header-bg);">Credit Exposure, Credit Bureau History and Collateral</span>
+            </div>
+            <div class="policy-summary-right"><span style="font-size: 10.5px; color: var(--text-muted);">Bureau &amp; Collateral</span></div>
+          </summary>
+          <div class="policy-body">
+            <p class="policy-para">Reviews wider credit exposure, revolving line utilization, bureau repayment track record, and collateral coverage ratios.</p>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Active SAS Rules: <span class="badge-logic">LOG-NPA-026</span> (Utilization &gt; 80%), <span class="badge-logic">LOG-NPA-027</span> (Credit Score &lt; 650), <span class="badge-logic">LOG-NPA-030</span> (Outstanding Ratio &gt; 80%)</div>
+          </div>
+        </div>
+        <div class="policy-accordion" style="margin-bottom: 8px;">
+          <summary>
+            <div class="policy-summary-left">
+              <span class="badge-policy">POL-NPA-004</span>
+              <span style="font-weight: 700; color: var(--header-bg);">Risk Grading, Collection Escalation and Customer Protection</span>
+            </div>
+            <div class="policy-summary-right"><span style="font-size: 10.5px; color: var(--text-muted);">Governance &amp; Escalation</span></div>
+          </summary>
+          <div class="policy-body">
+            <p class="policy-para">Establishes probability bands for collection outreach and escalation while enforcing audit governance and customer grievance safeguards.</p>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Model Authority: SAS Model Studio Champion Logistic Regression (C-stat: 0.803, KS: 0.463)</div>
+          </div>
+        </div>
+      `;
+
+      const citationsContainer = document.getElementById("citations-container");
+      citationsContainer.innerHTML = `
+        <div style="padding: 24px; text-align: center; background: #F8FAFD; border: 1px dashed #CBD5E1; border-radius: 7px; color: var(--text-secondary); font-size: 12.5px;">
+          <div style="font-weight: 600; color: var(--header-bg); margin-bottom: 4px;">Vector Citations Awaiting Query</div>
+          Click <strong>Generate AI Assessment</strong> to run semantic search across the policy knowledge base and extract verified audit excerpts.
+        </div>
+      `;
+    }
+
+    // 6. Render Full AI Assessment & Policy Citations
+    function renderAssessment(data) {
+      const ast = data.assessment || {};
+      const sources = data.citations || [];
+
+      document.getElementById("assessment-status-badge").textContent = "AI Evidence Verified";
+      document.getElementById("assessment-status-badge").className = "badge badge-low";
+
+      // Narrative Executive Summary
+      const narrative = ast.executive_summary || "Structured assessment generated.";
+      document.getElementById("assessment-narrative-text").textContent = narrative;
+
+      // TAB 4: Policies & Evidence
+      const act = ast.overview?.recommended_action || selectedCustomerData?.sas_model_results?.recommended_action || 'NORMAL MONITORING';
+      const grd = ast.overview?.model_risk_grade || selectedCustomerData?.sas_model_results?.model_risk_grade || 'LOW';
+
+      document.getElementById("policy-action-explanation").innerHTML = `
+        <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Authoritative Protocol:</span>
+            <span class="badge ${getRiskBadgeClass(grd)}" style="font-size: 11px; padding: 3px 10px;">${act}</span>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted);">
+            Source: SAS Model Studio Champion Policy Matrix
+          </div>
+        </div>
+        <p style="margin-top: 6px; font-size: 12.5px; line-height: 1.55; color: var(--text-main);">
+          ${formatInlinePolicy(ast.recommended_action_explanation || 'Follow prescribed banking operational protocol.')}
+        </p>
+        ${ast.final_assessment ? `
+          <div style="margin-top: 10px; padding: 8px 12px; background: #F8FAFD; border-left: 3px solid var(--primary-action); border-radius: 4px; font-size: 12px; color: #1E293B; line-height: 1.5;">
+            <strong>Final Credit Assessment:</strong> ${formatInlinePolicy(ast.final_assessment)}
+          </div>
+        ` : ''}
+      `;
+
+      // Applicable Policies
+      const policiesList = document.getElementById("policies-accordion-list");
+      policiesList.innerHTML = "";
+      const policies = ast.applicable_policies || [];
+      if (policies.length === 0) {
+        policiesList.innerHTML = '<p style="font-size: 12px; color: var(--text-secondary); padding: 8px;">No applicable bank policy passages cited for this profile.</p>';
+      } else {
+        policies.forEach(pol => {
+          const details = document.createElement("details");
+          details.className = "policy-accordion";
+          details.open = true;
+          details.innerHTML = `
+            <summary>
+              <div class="policy-summary-left">
+                <span class="badge-policy">${pol.policy_id}</span>
+                <span style="font-weight: 700; color: var(--header-bg);">${pol.policy_name}</span>
+              </div>
+              <div class="policy-summary-right">
+                ${pol.source_ids ? `<span class="badge badge-neutral" style="font-size: 10px;">Citations: ${pol.source_ids.join(', ')}</span>` : ''}
+                <span style="font-size: 11px; color: var(--text-muted);">▼</span>
+              </div>
+            </summary>
+            <div class="policy-body">
+              <p class="policy-para" style="font-size: 12.5px; color: #1E293B;">${formatInlinePolicy(pol.explanation)}</p>
+              ${pol.source_ids ? `
+                <div style="margin-top: 8px; font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+                  <span>Knowledge Base Passage Handles:</span>
+                  ${pol.source_ids.map(sid => `<span class="badge badge-neutral" style="font-family: Consolas, monospace; font-size: 10px;">${sid}</span>`).join(' ')}
+                </div>
+              ` : ''}
+            </div>
+          `;
+          policiesList.appendChild(details);
+        });
+      }
+
+      // Supporting Citations
+      const citationsContainer = document.getElementById("citations-container");
+      citationsContainer.innerHTML = "";
+      if (sources.length === 0) {
+        citationsContainer.innerHTML = '<p style="font-size: 12px; color: var(--text-secondary); padding: 8px;">No vector citations available.</p>';
+      } else {
+        sources.forEach(src => {
+          const div = document.createElement("div");
+          div.className = "citation-card";
+
+          const polBadges = (src.policy_ids || []).map(p => `<span class="badge-policy">${p}</span>`).join(" ");
+          const logBadges = (src.logic_ids || []).map(l => `<span class="badge-logic">${l}</span>`).join(" ");
+
+          div.innerHTML = `
+            <div class="citation-header">
+              <div class="citation-title-group">
+                <span class="citation-id-tag">${src.id}</span>
+                <span class="citation-title-text">${src.title || 'Knowledge Passage'}</span>
+              </div>
+              <div class="citation-meta-tags">
+                ${polBadges}
+                ${logBadges}
+              </div>
+            </div>
+            <div class="citation-content">
+              ${formatPolicyMarkdown(src.excerpt)}
+            </div>
+          `;
+          citationsContainer.appendChild(div);
+        });
+      }
+    }
+
+    // 7. Event Listeners for Filters & Search (with Debounce)
+    let searchDebounceTimer = null;
+    searchInput.addEventListener("input", () => {
+      searchClear.style.display = searchInput.value ? "block" : "none";
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(renderCustomerTable, 120);
+    });
+
+    searchClear.addEventListener("click", () => {
+      searchInput.value = "";
+      searchClear.style.display = "none";
+      renderCustomerTable();
+    });
+
+    gradeFilter.addEventListener("change", renderCustomerTable);
+    classFilter.addEventListener("change", renderCustomerTable);
+
+    // Initial Launch
+    loadCustomers();
+  </script>
+</body>
+
+</html>

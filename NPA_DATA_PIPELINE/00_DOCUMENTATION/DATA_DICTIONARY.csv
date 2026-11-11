@@ -1,0 +1,133 @@
+﻿table_name,column_name,data_type,description,valid_values_range,sample_value
+customer_master,customer_id,int64,Unique integer identifier for each bank customer,1 to 12000,1
+customer_master,age,int64,Age of customer in years,21 to 70,38
+customer_master,gender,str,Customer gender code,"M, F",M
+customer_master,marital_status,str,Marital status,"MARRIED, SINGLE",MARRIED
+customer_master,occupation,str,Customer primary occupation category,"SALARIED, BUSINESS, SELF_EMPLOYED, PROFESSIONAL",SALARIED
+customer_master,monthly_income,int64,Net verified monthly income in INR,"25,000 to 350,000",65400
+customer_master,employment_years,float64,Years of professional work experience,0.5 to 35.0 (<= age - 18),12.4
+customer_master,city_type,str,Classification of customer residence city,"METRO, URBAN, SEMI_URBAN, RURAL",URBAN
+loan_account,customer_id,int64,Customer key matching customer_master,1 to 12000,1
+loan_account,loan_id,int64,Unique loan account identifier,5000001 to 5012000,5000001
+loan_account,loan_type,str,Credit product category,"HOME, PERSONAL, AUTO, BUSINESS",HOME
+loan_account,sanctioned_amount,float64,Total loan principal sanctioned in INR,"100,000 to 5,000,000",1850000.0
+loan_account,outstanding_amount,float64,Current outstanding principal balance in INR,0 < outstanding < sanctioned,1342510.45
+loan_account,emi_amount,float64,Contractual monthly equated installment in INR,Positive float reconciling with schedule,21450.0
+loan_account,interest_rate,float64,Annual contractual interest rate in percentage,7.5 to 16.5,8.75
+loan_account,collateral_value,float64,Assessed collateral/asset value in INR,Positive float,2500000.0
+loan_account,loan_age_months,int64,Elapsed loan tenure in months since disbursal,>= 12,26
+loan_account,remaining_tenure,int64,Remaining contractual tenure in months,>= 6,58
+loan_account,loan_status,str,Current operational loan status,ACTIVE,ACTIVE
+emi_history,customer_id,int64,Customer key,1 to 12000,1
+emi_history,month_no,int64,Month sequence in 12-month observation window,1 to 12,1
+emi_history,emi_due,float64,Equated monthly installment due amount,Positive float,21450.0
+emi_history,emi_paid,float64,Actual installment amount paid (strictly paid in full),Must equal emi_due,21450.0
+emi_history,days_past_due,int64,Days past due at month-end (strictly clean),0,0
+emi_history,npa_indicator,int64,Regulatory NPA indicator (strictly 0 for performing),0,0
+payment_history,customer_id,int64,Customer key,1 to 12000,1
+payment_history,payment_month,int64,Payment month sequence,1 to 12,1
+payment_history,payment_amount,float64,Installment payment received,Must equal emi_due,21450.0
+payment_history,payment_delay,int64,Payment arrival delay in days (strictly on-time),0,0
+payment_history,bounce_flag,int64,Payment debit mandate bounce flag (strictly clean),0,0
+payment_history,late_payment_flag,int64,Late payment flag (delay > 30 days) (strictly clean),0,0
+credit_bureau,customer_id,int64,Customer key,1 to 12000,1
+credit_bureau,credit_score,int64,External credit bureau score,580 to 840,742
+credit_bureau,total_credit_limit,float64,Aggregate credit limit across all bureau accounts,"50,000 to 2,000,000",500000.0
+credit_bureau,total_credit_balance,float64,Aggregate outstanding balance across bureau accounts,0 <= balance <= limit,125000.0
+credit_bureau,active_credit_accounts,int64,Number of currently active credit lines/cards,1 to 9,4
+credit_bureau,overdue_accounts,int64,Number of accounts currently past due (clean),0,0
+credit_bureau,bureau_dpd,int64,Highest days past due reported on bureau (clean),0,0
+credit_bureau,recent_enquiries,int64,Number of hard credit enquiries in past 6 months,0 to 8,2
+credit_bureau,writeoff_accounts,int64,Number of accounts written off in history (clean),0,0
+transaction_history,customer_id,int64,Customer key,1 to 12000,1
+transaction_history,transaction_month,int64,Transaction observation month,1 to 12,1
+transaction_history,credit_transaction,float64,Total aggregate monthly credit turnover in INR,Positive float,68200.0
+transaction_history,debit_transaction,float64,Total aggregate monthly non-EMI debits in INR,Positive float (excludes loan EMI),31200.0
+transaction_history,transaction_count,int64,Total count of debit/credit transactions in month,10 to 120,42
+transaction_history,cash_withdrawal,float64,Cash ATM/branch withdrawals (subset of debits),0 <= cash <= debit_transaction,4500.0
+NPA_History,customer_id,int64,Customer key for sampled prior history,Sampled customer IDs,3
+NPA_History,prior_loan_id,int64,Unique identifier for prior closed loan,70000001+,70000003
+NPA_History,prior_loan_type,str,Product type of prior loan cycle,"HOME, PERSONAL, AUTO, BUSINESS",AUTO
+NPA_History,prior_loan_start_date,str,Disbursal date of prior loan cycle,YYYY-MM-DD,2020-05-01
+NPA_History,prior_loan_end_date,str,Maturity or resolution date of prior cycle,YYYY-MM-DD (< current start),2022-04-01
+NPA_History,current_loan_start_date,str,Start date of current active loan cycle,YYYY-MM-DD,2022-05-01
+NPA_History,prior_loan_tenure_months,int64,Prior loan contractual term,24,24
+NPA_History,prior_loan_sanctioned_amount,float64,Prior sanctioned principal,Positive float,240000.0
+NPA_History,prior_loan_interest_rate,float64,Prior annual interest rate,8.5 to 16.5,11.5
+NPA_History,prior_loan_emi_amount,float64,Prior contractual monthly installment,Positive float,11240.0
+NPA_History,history_month_no,int64,Month sequence in 24-month prior cycle,1 to 24,1
+NPA_History,history_month_date,str,Calendar month date,YYYY-MM-DD,2020-05-01
+NPA_History,emi_due,float64,Contractual installment due in prior cycle,Positive float,11240.0
+NPA_History,emi_paid,float64,Actual installment paid in prior cycle,Non-negative float,11240.0
+NPA_History,days_past_due,int64,Delinquency days past due in prior cycle,0 to 90+,0
+NPA_History,payment_delay_days,int64,Payment delay in prior cycle,0 to 90+,0
+NPA_History,paid_flag,int64,Binary indicator of installment payment,"0, 1",1
+NPA_History,missed_payment_flag,int64,Binary indicator of missed installment,"0, 1",0
+NPA_History,payment_status,str,Monthly payment outcome classification,"PAID_ON_TIME, PAID_LATE, MISSED, CURED",PAID_ON_TIME
+NPA_History,bounce_flag,int64,Mandate return/bounce in prior cycle,"0, 1",0
+NPA_History,consecutive_missed_months,int64,Consecutive run of unpaid installments,0 to 21,0
+NPA_History,repayment_pattern,str,Assigned 24-month prior behavior pattern,7 distinct patterns,ALL_PAID_ON_TIME
+NPA_History,previous_npa_flag,int64,Did prior loan ever become NPA in that cycle?,"0, 1",0
+NPA_History,npa_event_flag,int64,First month reaching 90+ DPD in prior cycle,"1 only on event month, else 0",0
+NPA_History,npa_status_flag,int64,Account in default status prior to resolution,"1 while in default, else 0",0
+NPA_History,previous_npa_date,str,Calendar date when 90 DPD first reached,YYYY-MM-DD or empty,
+NPA_History,prior_loan_status,str,Final account closure status,"CLOSED_REGULAR, CLOSED_NPA_RESOLVED, CLOSED_NPA_WRITTEN_OFF",CLOSED_REGULAR
+NPA_History,resolution_status,str,Resolution category of prior loan,"CLOSED_AS_SCHEDULED, SETTLED, RECOVERED, WRITTEN_OFF",CLOSED_AS_SCHEDULED
+NPA_History,resolution_date,str,Date account was resolved / closed,YYYY-MM-DD or empty,
+NPA_History,recovery_amount,float64,Post-default recovery / settlement received,Non-negative float (not an EMI),0.0
+customer_company_details,customer_id,int64,Customer key matching customer_master,1 to 12000,1
+customer_company_details,company_id,int64,Unique synthetic business identifier,90000001+,90000001
+customer_company_details,company_name,str,Synthetic employer / business name,Synthetic code name,SYNTHCO-MAHAR-MANUFACT-90000001
+customer_company_details,company_relationship,str,Legal relationship to customer,"EMPLOYER, CUSTOMER_OWNED, PROFESSIONAL_PRACTICE",EMPLOYER
+customer_company_details,occupation,str,Customer occupation matching master,"SALARIED, BUSINESS, SELF_EMPLOYED, PROFESSIONAL",SALARIED
+customer_company_details,industry,str,Broad industrial economic sector,10 Indian sectors,Manufacturing
+customer_company_details,sub_industry,str,Sub-industry business specialization,Specific sub-sector,Auto Components
+customer_company_details,company_city,str,City of company headquarters,Major Indian city,Mumbai
+customer_company_details,company_state,str,State of company headquarters,Indian state,Maharashtra
+customer_company_details,company_country,str,Country,India,India
+customer_company_details,company_age_years,int64,Operating age of enterprise in years,3 to 45,18
+customer_company_details,customer_company_tenure_years,float64,Customer tenure with enterprise in years,<= company_age,8.2
+customer_company_details,employee_count,int64,Total workforce count,Positive integer,184
+customer_company_details,company_size,str,Enterprise scale classification,"MICRO, SMALL, MEDIUM, LARGE",MEDIUM
+customer_company_details,annual_turnover,float64,Annual gross enterprise turnover in INR,Positive float,450000000.0
+customer_company_details,turnover_growth_pct,float64,Year-over-year revenue growth percentage,-35.0 to +45.0,4.8
+customer_company_details,profit_margin_pct,float64,Net operating profit margin percentage,-8.0 to +30.0,8.2
+customer_company_details,debt_to_equity,float64,Total debt to net worth leverage ratio,0.1 to 7.5,1.45
+customer_company_details,current_ratio,float64,Current assets to current liabilities liquidity,0.4 to 5.0,1.82
+customer_company_details,credit_rating,str,Synthetic credit quality grade,"AA, A, BBB, BB, B, CCC",A
+customer_company_details,business_status,str,Commercial trading health status,"EXPANDING, STABLE, UNDER_PRESSURE, DISTRESSED",STABLE
+customer_company_details,sector_outlook_synthetic,str,Simulated macroeconomic industry outlook,"POSITIVE, STABLE, CAUTIOUS, NEGATIVE",STABLE
+customer_company_details,market_risk_level_synthetic,str,Simulated market risk intensity,"LOW, MEDIUM, HIGH",MEDIUM
+customer_company_details,financial_stress_flag_synthetic,int64,Binary synthetic financial distress trigger,"0, 1",0
+customer_company_details,synthetic_scenario_event,str,Simulated sector event narrative,Standard scenario events,STEADY_DEMAND
+customer_company_details,market_lookup_key,str,Key for external industry research retrieval,India | State | Industry,India | Maharashtra | Manufacturing
+customer_company_details,market_research_scope,str,Scope boundary for RAG information retrieval,INDUSTRY_AND_REGION_ONLY,INDUSTRY_AND_REGION_ONLY
+customer_company_details,company_data_source,str,Metadata provenance,SYNTHETIC_SCENARIO_DATA,SYNTHETIC_SCENARIO_DATA
+customer_company_details,company_data_is_synthetic,int64,AI guardrail safety marker,1,1
+customer_company_details,company_profile_as_of_date,str,Profile snapshot observation date,YYYY-MM-DD,2026-10-31
+future_repayment_simulation,customer_id,int64,"Customer key (10,000 labelled dev only)",1 to 10000,1
+future_repayment_simulation,future_month,int64,Future simulated month index,1 to 6,1
+future_repayment_simulation,emi_due,float64,Contractual installment due,Positive float,21450.0
+future_repayment_simulation,emi_paid,float64,Simulated repayment received,Non-negative float,21450.0
+future_repayment_simulation,days_past_due,int64,Cumulative DPD from oldest unpaid installment,0 to 180,0
+future_repayment_simulation,npa_indicator,int64,Becomes 1 when DPD reaches 90+ days,"0, 1",0
+future_repayment_simulation,payment_status,str,Monthly simulated payment status,"PAID_ON_TIME, MISSED, CURED, NPA_DEFAULT",PAID_ON_TIME
+future_repayment_simulation,outstanding_arrears,float64,Cumulative overdue arrears carried forward,Non-negative float,0.0
+future_repayment_simulation,as_of_date,str,Future simulation calendar month,2026-11-01 to 2027-04-01,2026-11-01
+future_outcome,customer_id,int64,"Customer key (10,000 labelled dev only)",1 to 10000,1
+future_outcome,npa_flag,int64,"Supervised target: 1 if DPD reaches 90+ in future simulation, else 0","0, 1 (calibrated ~8-15%)",0
+NPA_CUSTOMER_SPLIT,customer_id,int64,Customer key,1 to 12000,1
+NPA_CUSTOMER_SPLIT,population_role,str,Design role of customer in modeling pipeline,"DEVELOPMENT, SCORING",DEVELOPMENT
+NPA_CUSTOMER_SPLIT,split_set,str,Partition assignment,"TRAIN (7,000), TEST (3,000), SCORING (2,000)",TRAIN
+NPA_CUSTOMER_SPLIT,random_seed,int64,Fixed random seed for reproducible stratification,20260814,20260814
+npa_history_customer_summary,customer_id,int64,"Customer key across all 12,000 customers",1 to 12000,1
+npa_history_customer_summary,history_available,int64,Was prior loan history available in portfolio?,"0 (unavailable), 1 (available)",1
+npa_history_customer_summary,previous_npa_flag,int64,Did customer experience prior NPA in old loan?,"0, 1",0
+npa_history_customer_summary,prior_missed_payment_count,int64,Count of missed installments in prior cycle,>= 0,0
+npa_history_customer_summary,prior_avg_dpd,float64,Average DPD recorded in prior 24-month cycle,>= 0,0.0
+npa_history_customer_summary,prior_max_dpd,int64,Peak DPD reached in prior loan cycle,>= 0,0
+npa_history_customer_summary,max_consecutive_missed_months,int64,Longest consecutive unpaid streak in prior cycle,>= 0,0
+npa_history_customer_summary,prior_npa_event_count,int64,Count of NPA default events in prior cycle,"0, 1",0
+npa_history_customer_summary,repayment_pattern,str,Prior behavior pattern or HISTORY_UNAVAILABLE,Pattern string,ALL_PAID_ON_TIME
+npa_history_customer_summary,resolution_status,str,Prior closure status or NOT_APPLICABLE,Resolution string,CLOSED_AS_SCHEDULED
+npa_history_customer_summary,prior_recovery_amount,float64,Total recovery received on prior default,>= 0,0.0

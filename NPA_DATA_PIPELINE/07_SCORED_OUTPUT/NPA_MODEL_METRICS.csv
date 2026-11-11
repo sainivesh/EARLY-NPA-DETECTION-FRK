@@ -1,0 +1,15 @@
+metric_name,metric_value,metric_description
+test_population_size,3000,Total independent test customer count
+test_positive_events,365,Actual positive NPA accounts in test set
+test_negative_events,2635,Actual non-NPA performing accounts in test set
+event_rate_pct,12.17,Test population positive event rate
+classification_threshold,0.30,Decision cutoff for predicted positive class
+true_positives,245,Correctly predicted NPA accounts
+false_positives,57,Performing accounts predicted as NPA
+true_negatives,2578,Correctly predicted performing accounts
+false_negatives,120,NPA accounts missed by model
+accuracy_pct,94.10,Overall classification accuracy
+sensitivity_recall_pct,67.12,Proportion of true NPA cases captured
+specificity_pct,97.84,Proportion of true performing cases identified
+precision_pct,81.13,Proportion of predicted NPA accounts that defaulted
+f1_score,0.7346,Harmonic mean of precision and recall

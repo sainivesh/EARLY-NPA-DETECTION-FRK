@@ -1,0 +1,26 @@
+{
+  "generation_timestamp": "2026-11-10T16:20:46.247112",
+  "random_seed": 20260814,
+  "as_of_date": "2026-10-31",
+  "total_customers": 12000,
+  "development_customers": 10000,
+  "train_customers": 7000,
+  "test_customers": 3000,
+  "scoring_customers": 2000,
+  "npa_positive_count": 1216,
+  "npa_positive_rate_pct": 12.16,
+  "tables": {
+    "customer_master": 12000,
+    "loan_account": 12000,
+    "emi_history": 144000,
+    "payment_history": 144000,
+    "credit_bureau": 12000,
+    "transaction_history": 144000,
+    "NPA_History": 115512,
+    "customer_company_details": 12000,
+    "future_repayment_simulation": 60000,
+    "future_outcome": 10000,
+    "NPA_CUSTOMER_SPLIT": 12000,
+    "npa_history_customer_summary": 12000
+  }
+}
