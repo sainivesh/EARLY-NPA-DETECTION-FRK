@@ -1203,6 +1203,9 @@
                 Select a customer and click <strong>Generate AI Assessment</strong> to synthesize SAS risk factors and
                 cross-examine banking policies.
               </p>
+              <div id="llm-sql-banner" style="display: none; margin-top: 10px; padding: 8px 12px; background: #0F172A; color: #38BDF8; font-family: 'Consolas', 'Courier New', monospace; font-size: 11px; border-radius: 6px; border-left: 3px solid #0EA5E9; line-height: 1.45;">
+                <span style="color: #94A3B8; font-weight: 600;">LLM Database Query:</span> <code id="llm-sql-code" style="color: #38BDF8; word-break: break-all;"></code>
+              </div>
             </div>
           </div>
 
@@ -1592,6 +1595,8 @@
             `AI assessment has not been generated for Customer ${cid} yet.<br>Click <strong>Generate AI Assessment</strong> above to run RAG policy retrieval and generate evidence-based narrative.`;
           document.getElementById("assessment-status-badge").textContent = "Ready to Generate";
           document.getElementById("assessment-status-badge").className = "badge badge-neutral";
+          const sqlBanner = document.getElementById("llm-sql-banner");
+          if (sqlBanner) sqlBanner.style.display = "none";
           renderPolicyDefaults(selectedCustomerData);
         }
       } catch (err) {
@@ -1981,6 +1986,16 @@
       // Narrative Executive Summary
       const narrative = ast.executive_summary || "Structured assessment generated.";
       document.getElementById("assessment-narrative-text").textContent = narrative;
+
+      // LLM SQL Query display
+      const sqlBanner = document.getElementById("llm-sql-banner");
+      const sqlCode = document.getElementById("llm-sql-code");
+      if (data.sql_query && sqlBanner && sqlCode) {
+        sqlBanner.style.display = "block";
+        sqlCode.textContent = data.sql_query;
+      } else if (sqlBanner) {
+        sqlBanner.style.display = "none";
+      }
 
       // TAB 4: Policies & Evidence
       const act = ast.overview?.recommended_action || selectedCustomerData?.sas_model_results?.recommended_action || 'NORMAL MONITORING';

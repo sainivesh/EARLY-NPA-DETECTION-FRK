@@ -14,7 +14,9 @@ from openai import OpenAI, OpenAIError
 
 from npa_assessment import (
     build_knowledge_collection,
+    execute_customer_sql,
     generate_assessment,
+    generate_customer_sql_query,
     retrieve_knowledge,
 )
 
@@ -38,9 +40,26 @@ def _connect_database() -> sqlite3.Connection:
 
 def _load_scoring_customers() -> None:
     global SCORED_CUSTOMERS
+    customers: dict[int, dict[str, Any]] = {}
+    if DATABASE_PATH.is_file():
+        try:
+            with _connect_database() as conn:
+                cur = conn.cursor()
+                cur.execute("SELECT * FROM NPA_SCORING_RESULTS ORDER BY customer_id")
+                for row in cur.fetchall():
+                    row_dict = dict(row)
+                    cid = int(row_dict["customer_id"])
+                    customers[cid] = row_dict
+            if customers:
+                SCORED_CUSTOMERS = customers
+                print(f"Loaded {len(SCORED_CUSTOMERS)} scored customers from {DATABASE_PATH.name} (NPA_SCORING_RESULTS)", flush=True)
+                return
+        except Exception as e:
+            print(f"Notice: Loading from DB failed ({e}), falling back to CSV.", flush=True)
+
     if not SCORING_RESULTS_PATH.is_file():
         raise FileNotFoundError(f"Scored results file not found: {SCORING_RESULTS_PATH}")
-    customers: dict[int, dict[str, Any]] = {}
+    customers = {}
     with open(SCORING_RESULTS_PATH, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
@@ -346,15 +365,6 @@ class NPARequestHandler(BaseHTTPRequestHandler):
             _json_response(self, 400, {"error": "Provide a valid customer_id."})
             return
 
-        record = SCORED_CUSTOMERS.get(customer_id)
-        if record is None:
-            _json_response(
-                self,
-                404,
-                {"error": f"Customer {customer_id} not found among the scored customers."},
-            )
-            return
-
         api_key = os.getenv("API_KEY") or os.getenv("OPENAI_API_KEY")
         if not api_key:
             _json_response(
@@ -371,6 +381,49 @@ class NPARequestHandler(BaseHTTPRequestHandler):
             )
             return
 
+        client = OpenAI(
+            api_key=api_key,
+            base_url=os.getenv("BASE_URL") or None,
+            timeout=60,
+            max_retries=1,
+        )
+        model_name = os.getenv("OPENAI_MODEL", "deepseek-v4.1-flash")
+
+        # 1. LLM-driven SQL query generation to retrieve customer data from SQLite database
+        sql_query_used = ""
+        record = None
+        try:
+            generated_sql = generate_customer_sql_query(client, model_name, customer_id)
+            print(f"\n[SQL Agent] LLM generated SQL for customer {customer_id}:\n  {generated_sql}", flush=True)
+            with _connect_database() as conn:
+                record, sql_query_used = execute_customer_sql(conn, generated_sql, customer_id)
+            print(f"[SQL Agent] Query executed successfully on {DATABASE_PATH.name}: {sql_query_used}\n", flush=True)
+        except Exception as sql_err:
+            print(f"[SQL Agent] Notice: {sql_err}. Using parameterized database query fallback.", flush=True)
+            try:
+                with _connect_database() as conn:
+                    cur = conn.cursor()
+                    cur.execute("SELECT * FROM NPA_SCORING_RESULTS WHERE customer_id = ?", (customer_id,))
+                    row = cur.fetchone()
+                    if row:
+                        record = dict(row)
+                        sql_query_used = f"SELECT * FROM NPA_SCORING_RESULTS WHERE customer_id = {customer_id};"
+            except Exception as db_err:
+                print(f"[SQL Agent] DB fallback failed ({db_err}), checking in-memory cache.", flush=True)
+
+        if record is None:
+            record = SCORED_CUSTOMERS.get(customer_id)
+            if record:
+                sql_query_used = f"SELECT * FROM NPA_SCORING_RESULTS WHERE customer_id = {customer_id};"
+
+        if record is None:
+            _json_response(
+                self,
+                404,
+                {"error": f"Customer {customer_id} not found among scored records in database."},
+            )
+            return
+
         try:
             sources = retrieve_knowledge(RULE_COLLECTION, record)
         except (ValueError, KeyError) as error:
@@ -378,15 +431,9 @@ class NPARequestHandler(BaseHTTPRequestHandler):
             return
 
         try:
-            client = OpenAI(
-                api_key=api_key,
-                base_url=os.getenv("BASE_URL") or None,
-                timeout=60,
-                max_retries=1,
-            )
             assessment = generate_assessment(
                 client,
-                os.getenv("OPENAI_MODEL", "deepseek-v4.1-flash"),
+                model_name,
                 record,
                 sources,
             )
@@ -425,6 +472,7 @@ class NPARequestHandler(BaseHTTPRequestHandler):
                 "assessment": assessment,
                 "citations": sources,
                 "customer_profile": customer_profile,
+                "sql_query": sql_query_used,
             },
         )
 
