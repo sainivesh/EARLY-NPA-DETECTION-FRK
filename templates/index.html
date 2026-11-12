@@ -446,7 +446,7 @@
     .tab-viewport {
       flex: 1;
       overflow-y: auto;
-      padding: 16px 20px 24px;
+      padding: 12px 18px 16px;
       min-height: 0;
     }
 
@@ -463,8 +463,8 @@
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 7px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
       box-shadow: var(--shadow-sm);
     }
 
@@ -483,8 +483,8 @@
       background: linear-gradient(180deg, #FFFFFF 0%, #FAFCFF 100%);
       border: 1.5px solid #D6E4F0;
       border-radius: 8px;
-      padding: 14px 18px;
-      margin-bottom: 12px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
       box-shadow: var(--shadow-sm);
     }
 
@@ -492,9 +492,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
     }
 
     .hero-grade-box {
@@ -551,12 +551,12 @@
       display: grid;
       grid-template-columns: auto 1fr;
       align-items: center;
-      gap: 20px;
-      margin: 8px 0;
+      gap: 16px;
+      margin: 4px 0;
     }
 
     .hero-prob-number {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 800;
       color: var(--header-bg);
       line-height: 1;
@@ -594,7 +594,7 @@
 
     .prob-bar-threshold {
       position: absolute;
-      left: 30%;
+      left: 50%;
       top: 0;
       bottom: 0;
       width: 2px;
@@ -604,10 +604,10 @@
     .hero-note {
       font-size: 11px;
       color: var(--text-secondary);
-      margin-top: 8px;
-      line-height: 1.45;
+      margin-top: 6px;
+      line-height: 1.4;
       border-top: 1px dashed var(--border-color);
-      padding-top: 6px;
+      padding-top: 4px;
     }
 
     /* Narrative Section: Customer Risk Assessment */
@@ -615,15 +615,176 @@
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 7px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
     }
 
     .assessment-narrative {
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.6;
-      color: #2D3748;
-      white-space: pre-line;
+      color: #1E293B;
+    }
+
+    .assessment-narrative p {
+      margin: 0 0 6px 0;
+      line-height: 1.6;
+      font-size: 14px;
+      color: #1E293B;
+    }
+
+    .assessment-intro-p {
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: #0F172A;
+      background: #F8FAFC;
+      border-left: 3.5px solid #2563EB;
+      border-radius: 5px;
+      padding: 7px 11px;
+      margin-bottom: 7px;
+    }
+
+    .assessment-sections-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .assessment-block {
+      border-radius: 6px;
+      padding: 6px 10px;
+      border: 1px solid #E2E8F0;
+    }
+
+    .block-risk {
+      background: #FFFDFD;
+      border-color: #FECACA;
+      border-left: 3.5px solid #DC2626;
+    }
+
+    .block-mitigating {
+      background: #FBFDFB;
+      border-color: #BBF7D0;
+      border-left: 3.5px solid #16A34A;
+    }
+
+    .block-guidance {
+      background: #FBFDFF;
+      border-color: #BFDBFE;
+      border-left: 3.5px solid #2563EB;
+    }
+
+    .assessment-block-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 750;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+    }
+
+    .block-risk .assessment-block-header {
+      color: #991B1B;
+    }
+
+    .block-mitigating .assessment-block-header {
+      color: #166534;
+    }
+
+    .block-guidance .assessment-block-header {
+      color: #1E40AF;
+    }
+
+    .assessment-item-list {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #334155;
+    }
+
+    .assessment-item-list li {
+      margin-bottom: 3px;
+    }
+
+    .assessment-item-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Word and Metric Highlighting */
+    .hl-grade {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.4px;
+    }
+    .hl-grade-crit {
+      background: #FEE2E2;
+      color: #991B1B;
+      border: 1px solid #FCA5A5;
+    }
+    .hl-grade-high {
+      background: #FFEDD5;
+      color: #C2410C;
+      border: 1px solid #FDBA74;
+    }
+    .hl-grade-med {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FCD34D;
+    }
+    .hl-grade-low {
+      background: #DCFCE7;
+      color: #166534;
+      border: 1px solid #86EFAC;
+    }
+
+    .hl-pos {
+      color: #15803D;
+      font-weight: 700;
+      background: #F0FDF4;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .hl-neg {
+      color: #B91C1C;
+      font-weight: 700;
+      background: #FEF2F2;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .hl-warning {
+      color: #C2410C;
+      font-weight: 700;
+      background: #FFF7ED;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .hl-num {
+      color: #0F172A;
+      font-weight: 700;
+    }
+
+    .hl-action {
+      color: #1D4ED8;
+      font-weight: 700;
+    }
+
+    .hl-safeguard {
+      display: inline-block;
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      color: #92400E;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-top: 2px;
     }
 
     .assessment-empty {
@@ -1164,21 +1325,21 @@
             <div class="hero-header-row">
               <div class="hero-grade-box">
                 <span class="badge hero-grade-badge badge-critical" id="hero-grade-badge">CRITICAL RISK</span>
-                <span class="hero-pred-tag" id="hero-pred-tag">Predicted future NPA risk within next 12 months: <span
+                <span class="hero-pred-tag" id="hero-pred-tag">Predicted future NPA risk within next 6 months: <span
                     class="yes">YES</span></span>
               </div>
               <div class="hero-action-box">
                 Recommended Action:
-                <span class="hero-action-badge" id="hero-action-badge">RECOVERY TEAM</span>
+                <span class="hero-action-badge" id="hero-action-badge">Urgent Credit Risk Assessment</span>
               </div>
             </div>
 
             <div class="hero-prob-row">
               <div class="hero-prob-number" id="hero-prob-val">66.20%</div>
               <div class="hero-prob-meta">
-                <div class="hero-prob-label">SAS Model-Estimated Default Probability (Operational Cutoff: 30.0%)</div>
+                <div class="hero-prob-label">SAS Model-Estimated Default Probability (Model Classification Cutoff: 50.0% | Risk Bands: Med ≥ 10%, High ≥ 30%, Crit ≥ 60%)</div>
                 <div class="prob-bar-track">
-                  <div class="prob-bar-threshold" title="Classification Cutoff (30%)"></div>
+                  <div class="prob-bar-threshold" style="left: 50%;" title="Model Classification Cutoff (50.0%)"></div>
                   <div class="prob-bar-fill" id="hero-prob-bar" style="width: 66.2%; background: var(--risk-critical);">
                   </div>
                 </div>
@@ -1186,30 +1347,159 @@
             </div>
 
             <div class="hero-note">
-              <strong>Notice:</strong> The borrower's active loan is currently performing ($DPD = 0$). This probability
-              represents future 12-month default risk estimated by the SAS Model Studio champion logistic regression
-              model.
+              <strong>Early-Warning Notice:</strong> The borrower's active loan is currently performing ($DPD = 0$).
+              This probability estimates future 6-month NPA risk generated by the SAS Model Studio champion model.
             </div>
           </div>
 
           <!-- 2. AI-Assisted Customer Risk Assessment Narrative -->
-          <div class="assessment-box">
-            <div class="card-title">
-              <span>Customer Risk Assessment</span>
+          <div class="assessment-box" id="overview-assessment-card" style="margin-bottom: 8px; padding: 10px 14px;">
+            <div class="card-title" style="margin-bottom: 6px;">
+              <span>Executive Assessment</span>
               <span id="assessment-status-badge" class="badge badge-neutral" style="font-size: 10px;">Audit Ready</span>
             </div>
             <div id="assessment-narrative-container">
-              <p class="assessment-narrative" id="assessment-narrative-text">
-                Select a customer and click <strong>Generate AI Assessment</strong> to synthesize SAS risk factors and
-                cross-examine banking policies.
-              </p>
-              <div id="llm-sql-banner" style="display: none; margin-top: 10px; padding: 8px 12px; background: #0F172A; color: #38BDF8; font-family: 'Consolas', 'Courier New', monospace; font-size: 11px; border-radius: 6px; border-left: 3px solid #0EA5E9; line-height: 1.45;">
-                <span style="color: #94A3B8; font-weight: 600;">LLM Database Query:</span> <code id="llm-sql-code" style="color: #38BDF8; word-break: break-all;"></code>
+              <div class="assessment-narrative" id="assessment-narrative-text">
+                <p>Select a customer and click <strong>Generate AI Assessment</strong> to synthesize SAS risk factors and cross-examine banking policies.</p>
               </div>
             </div>
           </div>
 
-          <!-- 3. Key Financial Snapshot Grid -->
+          <!-- 3. Top Three Relevant Risk Indicators -->
+          <div class="card" id="overview-top-indicators-card" style="padding: 10px 14px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 12px; font-weight: 700; color: var(--header-bg);">Top Three Relevant Indicators</span>
+              <span style="font-size: 10.5px; color: var(--text-muted);">Key Model & Contextual Drivers &middot; Complete evaluation in Risk Drivers tab</span>
+            </div>
+            <div id="overview-top-indicators-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+              <!-- 3 compact cards populated dynamically -->
+            </div>
+          </div>
+
+          <!-- 4. Authoritative Recommended Action -->
+          <div class="card" id="overview-action-card" style="padding: 10px 14px; margin-bottom: 0; border-left: 3px solid var(--primary-action);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; flex-wrap: wrap; gap: 6px;">
+              <div>
+                <strong style="font-size: 12px; color: var(--header-bg);">Recommended Action:</strong>
+                <span class="badge badge-critical" id="overview-action-badge" style="margin-left: 6px; font-size: 11px;">Urgent Credit Risk Assessment</span>
+              </div>
+              <div id="overview-action-purpose" style="font-size: 11px; color: var(--text-secondary); font-style: italic;">
+                Verify financial indicators and monitor capacity.
+              </div>
+            </div>
+            <div id="overview-action-checklist" style="font-size: 11px; color: var(--text-main); margin-top: 4px; line-height: 1.45;">
+              <!-- Reviewer verification steps (concise) -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==================== TAB 2: RISK DRIVERS ==================== -->
+        <div id="tab-drivers" class="tab-pane">
+
+          <!-- Distinction between Model Grade and Rule Grade -->
+          <div class="card" style="border-left: 3px solid var(--primary-action);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <strong style="font-size: 13px; color: var(--header-bg);">Dual-Grading System Architecture:</strong>
+                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">
+                  Distinguishing predictive econometric likelihood from internal rule-based warning indicators.
+                </div>
+              </div>
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div style="text-align: right;">
+                  <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">SAS Model Risk
+                    Grade</div>
+                  <span class="badge badge-critical" id="drivers-model-grade">CRITICAL (66.2%)</span>
+                </div>
+                <div style="border-left: 1px solid var(--border-color); height: 24px;"></div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Internal Rule-Based
+                    Grade</div>
+                  <span class="badge badge-high" id="drivers-rule-grade">HIGH (4 Flags)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historical Performance & Detailed Checklist (Enriched by AI Assessment) -->
+          <div id="assessment-drivers-sections-container" style="display: none; margin-bottom: 12px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="card" style="margin-bottom: 0;">
+                <div class="card-title">Previous Loan Facility Performance</div>
+                <div id="assessment-hist-body" style="font-size: 11.5px; line-height: 1.5; color: var(--text-main);"></div>
+              </div>
+              <div class="card" style="margin-bottom: 0;">
+                <div class="card-title">Reviewer Action Checklist & Verification</div>
+                <div id="assessment-steps-body" style="font-size: 11.5px; line-height: 1.5; color: var(--text-main);"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Merged Unified Table: Risk Indicators & Rule Threshold -->
+          <div class="card">
+            <div class="card-title">
+              <span>Risk Indicators &amp; Rule Threshold</span>
+              <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">Champion Model Inputs vs. Contextual Indicators &amp; Rule Benchmarks</span>
+            </div>
+            <div class="data-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 170px;">Risk Indicator</th>
+                    <th style="width: 110px;">Status</th>
+                    <th style="width: 110px;">Observed Value</th>
+                    <th style="width: 130px;">Rule Threshold</th>
+                    <th style="width: 150px;">Classification</th>
+                    <th>Credit Interpretation &amp; Evidence</th>
+                  </tr>
+                </thead>
+                <tbody id="risk-indicators-table-body">
+                  <!-- Dynamically populated unified indicators -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Active Pre-Score Risk Triggers -->
+          <div class="card">
+            <div class="card-title">
+              <span>Active Pre-Score Risk Triggers &amp; Key Reasons</span>
+              <span class="badge badge-neutral" id="snap-flag-count">2 Active Flags</span>
+            </div>
+            <div class="tag-cloud" id="snap-active-flags-cloud">
+              <!-- Active tag pills -->
+            </div>
+            <div style="margin-top: 10px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;"
+              id="snap-reasons-summary">
+              <!-- Risk reasons -->
+            </div>
+          </div>
+
+          <!-- Stored SAS Reason Explanations -->
+          <div class="card">
+            <div class="card-title">Stored SAS Decision Reasons (Ordered Priority)</div>
+            <div style="display: grid; gap: 8px; font-size: 12px; line-height: 1.5;">
+              <div style="padding: 6px 10px; background: #F8FAFC; border-radius: 4px;">
+                <strong>Priority 1 (Primary Factor):</strong> <span id="reason-slot-1">High total outflow-to-income ratio.</span>
+              </div>
+              <div style="padding: 6px 10px; background: #F8FAFC; border-radius: 4px;">
+                <strong>Priority 2 (Secondary Factor):</strong> <span id="reason-slot-2">Secondary risk indicators
+                  within acceptable range.</span>
+              </div>
+              <div style="padding: 6px 10px; background: #F8FAFC; border-radius: 4px;">
+                <strong>Priority 3 (Additional Factor):</strong> <span id="reason-slot-3">Payment behaviour is
+                  relatively stable.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==================== TAB 3: CUSTOMER & REPAYMENT ==================== -->
+        <div id="tab-details" class="tab-pane">
+
+          <!-- Key Financial Snapshot Grid -->
           <div class="kpi-grid">
             <div class="kpi-cell">
               <div class="kpi-label">Monthly Income</div>
@@ -1237,100 +1527,10 @@
             </div>
           </div>
 
-          <!-- 4. Top Active Risk Triggers -->
-          <div class="card">
-            <div class="card-title">
-              <span>Active Pre-Score Risk Triggers & Prototype Reasons</span>
-              <span class="badge badge-neutral" id="snap-flag-count">2 Active Flags</span>
-            </div>
-            <div class="tag-cloud" id="snap-active-flags-cloud">
-              <!-- Active tag pills -->
-            </div>
-            <div style="margin-top: 10px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;"
-              id="snap-reasons-summary">
-              <!-- Risk reasons -->
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ==================== TAB 2: RISK DRIVERS ==================== -->
-        <div id="tab-drivers" class="tab-pane">
-
-          <!-- Distinction between Model Grade and Rule Grade -->
-          <div class="card" style="border-left: 3px solid var(--primary-action);">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-              <div>
-                <strong style="font-size: 13px; color: var(--header-bg);">Dual-Grading System Architecture:</strong>
-                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">
-                  Distinguishing predictive econometric likelihood from prototype rule-based warning counters.
-                </div>
-              </div>
-              <div style="display: flex; gap: 12px; align-items: center;">
-                <div style="text-align: right;">
-                  <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">SAS Model Risk
-                    Grade</div>
-                  <span class="badge badge-critical" id="drivers-model-grade">CRITICAL (66.2%)</span>
-                </div>
-                <div style="border-left: 1px solid var(--border-color); height: 24px;"></div>
-                <div>
-                  <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Internal Rule-Based
-                    Grade</div>
-                  <span class="badge badge-high" id="drivers-rule-grade">HIGH (4 Flags)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Full 11 Risk Indicators Table -->
-          <div class="card">
-            <div class="card-title">Comprehensive Risk Indicators & Rule Threshold Evaluation</div>
-            <div class="data-table-wrap">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th style="width: 170px;">Risk Indicator</th>
-                    <th style="width: 80px;">Status</th>
-                    <th style="width: 90px;">Observed</th>
-                    <th style="width: 110px;">Rule Threshold</th>
-                    <th>Analytical Explanation</th>
-                    <th style="width: 180px;">Evidence / Category</th>
-                  </tr>
-                </thead>
-                <tbody id="risk-indicators-table-body">
-                  <!-- Dynamically populated 11 indicators -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Stored SAS Reason Explanations -->
-          <div class="card">
-            <div class="card-title">Stored SAS Prototype Decision Reasons (Ordered Priority)</div>
-            <div style="display: grid; gap: 8px; font-size: 12px; line-height: 1.5;">
-              <div style="padding: 6px 10px; background: #F8FAFC; border-radius: 4px;">
-                <strong>Priority 1 (Primary Factor):</strong> <span id="reason-slot-1">High debt-to-income ratio.</span>
-              </div>
-              <div style="padding: 6px 10px; background: #F8FAFC; border-radius: 4px;">
-                <strong>Priority 2 (Secondary Factor):</strong> <span id="reason-slot-2">Secondary risk indicators
-                  within acceptable range.</span>
-              </div>
-              <div style="padding: 6px 10px; background: #F8FAFC; border-radius: 4px;">
-                <strong>Priority 3 (Additional Factor):</strong> <span id="reason-slot-3">Payment behaviour is
-                  relatively stable.</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ==================== TAB 3: CUSTOMER & REPAYMENT ==================== -->
-        <div id="tab-details" class="tab-pane">
-
           <div class="profile-sections-grid">
             <!-- Panel 1: Borrower Profile -->
             <div class="card">
-              <div class="card-title">Borrower Demographic Profile</div>
+              <div class="card-title">Borrower Profile</div>
               <div class="attr-list">
                 <span class="attr-name">Customer ID:</span> <span class="attr-value" id="prof-cid">10001</span>
                 <span class="attr-name">Age & Gender:</span> <span class="attr-value" id="prof-age-gender">42 yrs /
@@ -1380,9 +1580,14 @@
                   id="bureau-balance">₹1,68,400.00</span>
                 <span class="attr-name">Revolving Credit Utilization:</span> <span class="attr-value"
                   id="bureau-util">84.2%</span>
-                <span class="attr-name">Debt-to-Income (DTI):</span> <span class="attr-value"
+                <span class="attr-name">Total Outflow-to-Income:</span> <span class="attr-value"
                   id="bureau-dti">61.2%</span>
-                <span class="attr-name">Loan-to-Value (LTV):</span> <span class="attr-value" id="bureau-ltv">N/A</span>
+                <span class="attr-name">Original LTV (Sanctioned / Collateral):</span> <span class="attr-value"
+                  id="bureau-orig-ltv">N/A</span>
+                <span class="attr-name">Current Collateral Coverage (Outstanding / Collateral):</span> <span class="attr-value"
+                  id="bureau-curr-ltv">N/A</span>
+                <span class="attr-name">Outstanding / Sanctioned Ratio:</span> <span class="attr-value"
+                  id="bureau-os-ratio">N/A</span>
                 <span class="attr-name">12M Account Debits / Credits:</span> <span class="attr-value"
                   id="bureau-cashflow">₹5.8L / ₹6.4L</span>
                 <span class="attr-name">Cash Flow Stability:</span> <span class="attr-value"
@@ -1597,6 +1802,8 @@
           document.getElementById("assessment-status-badge").className = "badge badge-neutral";
           const sqlBanner = document.getElementById("llm-sql-banner");
           if (sqlBanner) sqlBanner.style.display = "none";
+          const sectionsBox = document.getElementById("assessment-drivers-sections-container");
+          if (sectionsBox) sectionsBox.style.display = "none";
           renderPolicyDefaults(selectedCustomerData);
         }
       } catch (err) {
@@ -1624,7 +1831,7 @@
       heroBadge.className = `badge hero-grade-badge badge-${riskGrade.toLowerCase()}`;
 
       document.getElementById("hero-pred-tag").innerHTML = `
-        Predicted future NPA risk within next 12 months: <span class="${isPredictedNpa ? 'yes' : 'no'}">${isPredictedNpa ? 'YES' : 'NO'}</span>
+        Predicted future NPA risk within next 6 months: <span class="${isPredictedNpa ? 'yes' : 'no'}">${isPredictedNpa ? 'YES' : 'NO'}</span>
       `;
       document.getElementById("hero-action-badge").textContent = c.sas_model_results.recommended_action;
 
@@ -1634,6 +1841,10 @@
       const heroBar = document.getElementById("hero-prob-bar");
       heroBar.style.width = `${probPercent}%`;
       heroBar.style.background = isPredictedNpa ? "var(--risk-critical)" : "var(--risk-low)";
+
+      // Render Overview Top 3 Indicators & Prescribed Action
+      renderOverviewTopIndicators(null, c);
+      renderOverviewAction(null, null, c);
 
       // Snapshot Grid
       document.getElementById("snap-income").textContent = c.demographics.monthly_income;
@@ -1671,25 +1882,8 @@
       document.getElementById("drivers-rule-grade").textContent = `${c.internal_risk_flags.rule_grade} (${c.internal_risk_flags.flag_count} Flags)`;
       document.getElementById("drivers-rule-grade").className = `badge badge-${c.internal_risk_flags.rule_grade.toLowerCase()}`;
 
-      // Populate 11 indicators
-      const tbody = document.getElementById("risk-indicators-table-body");
-      tbody.innerHTML = "";
-      const indicators = c.all_risk_indicators || [];
-      // Sort: active first
-      const sortedInds = [...indicators].sort((a, b) => (b.is_active ? 1 : 0) - (a.is_active ? 1 : 0));
-      sortedInds.forEach(ind => {
-        const row = document.createElement("tr");
-        if (ind.is_active) row.className = "row-active-risk";
-        row.innerHTML = `
-          <td><strong>${ind.name}</strong></td>
-          <td>${ind.is_active ? '<span class="badge badge-critical">ACTIVE</span>' : '<span class="badge badge-low">PASS</span>'}</td>
-          <td><strong style="color: ${ind.is_active ? 'var(--risk-critical)' : 'inherit'}">${ind.observed}</strong></td>
-          <td style="color: var(--text-secondary);">${ind.threshold}</td>
-          <td>${ind.explanation}</td>
-          <td style="color: var(--text-secondary); font-size: 11px;">${ind.evidence}</td>
-        `;
-        tbody.appendChild(row);
-      });
+      // Populate unified Risk Indicators & Rule Threshold table
+      renderUnifiedRiskIndicatorsTable(c.all_risk_indicators, null);
 
       // Stored Reasons in Tab 2
       document.getElementById("reason-slot-1").textContent = c.risk_reasons.risk_reason_1 || "None";
@@ -1718,8 +1912,10 @@
       document.getElementById("bureau-limit").textContent = c.bureau_and_transactions.total_credit_limit;
       document.getElementById("bureau-balance").textContent = c.bureau_and_transactions.total_credit_balance;
       document.getElementById("bureau-util").textContent = c.financial_ratios.credit_utilization;
-      document.getElementById("bureau-dti").textContent = c.financial_ratios.debt_to_income;
-      document.getElementById("bureau-ltv").textContent = c.financial_ratios.loan_to_value;
+      document.getElementById("bureau-dti").textContent = c.financial_ratios.total_outflow_to_income || c.financial_ratios.debt_to_income || "N/A";
+      document.getElementById("bureau-orig-ltv").textContent = c.financial_ratios.original_ltv || c.financial_ratios.loan_to_value || "N/A";
+      document.getElementById("bureau-curr-ltv").textContent = c.financial_ratios.outstanding_to_collateral || "N/A";
+      document.getElementById("bureau-os-ratio").textContent = c.financial_ratios.outstanding_ratio || "N/A";
       document.getElementById("bureau-cashflow").textContent = `${c.bureau_and_transactions.total_debit_transaction} / ${c.bureau_and_transactions.total_credit_transaction}`;
       document.getElementById("bureau-cf-status").textContent = c.all_risk_indicators.find(i => i.id === 'unstable_cash_flow')?.observed || 'Stable';
 
@@ -1934,8 +2130,8 @@
             <div class="policy-summary-right"><span style="font-size: 10.5px; color: var(--text-muted);">Affordability Criteria</span></div>
           </summary>
           <div class="policy-body">
-            <p class="policy-para">Assesses payment discipline, bounce frequency, and debt-to-income limits. Reviews repayment trends across active facilities.</p>
-            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Active SAS Rules: <span class="badge-logic">LOG-NPA-016</span> (DTI &gt; 50%), <span class="badge-logic">LOG-NPA-017</span> (Bounces &ge; 3), <span class="badge-logic">LOG-NPA-018</span> (Payment Trend)</div>
+            <p class="policy-para">Assesses payment discipline, bounce frequency, and total outflow-to-income limits. Reviews repayment trends across active facilities.</p>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Active SAS Rules: <span class="badge-logic">LOG-NPA-016</span> (Total Outflow &gt; 50%), <span class="badge-logic">LOG-NPA-017</span> (Bounces &ge; 3), <span class="badge-logic">LOG-NPA-018</span> (Payment Trend)</div>
           </div>
         </div>
         <div class="policy-accordion" style="margin-bottom: 8px;">
@@ -1975,6 +2171,505 @@
       `;
     }
 
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderOverviewTopIndicators(kris, customerData) {
+      const grid = document.getElementById("overview-top-indicators-grid");
+      if (!grid) return;
+
+      let items = [];
+      if (kris && Array.isArray(kris) && kris.length > 0) {
+        items = kris.slice(0, 3).map(k => ({
+          name: k.indicator,
+          value: k.observed_value,
+          ref: k.threshold_reference || 'Normal threshold',
+          isRisk: !k.is_favourable,
+          status: k.is_favourable ? 'Favourable' : 'Elevated Risk',
+          type: k.indicator_type || 'Model Predictor',
+          interp: k.interpretation || ''
+        }));
+      } else if (customerData) {
+        const ratios = customerData.financial_ratios || {};
+        const bureau = customerData.bureau_and_transactions || {};
+        items = [
+          {
+            name: "Credit Card Utilization",
+            value: ratios.credit_utilization || "N/A",
+            ref: "Benchmark: ≤ 75.0%",
+            isRisk: parseFloat(ratios.credit_utilization) > 75,
+            status: parseFloat(ratios.credit_utilization) > 75 ? "Elevated Risk" : "Acceptable",
+            type: "Model Champion Predictor",
+            interp: "Revolving line balance relative to credit limit."
+          },
+          {
+            name: "Total Outflow-to-Income Ratio",
+            value: ratios.total_outflow_to_income || ratios.debt_to_income || "N/A",
+            ref: "Benchmark: ≤ 50.0%",
+            isRisk: parseFloat(ratios.total_outflow_to_income || ratios.debt_to_income) > 50,
+            status: parseFloat(ratios.total_outflow_to_income || ratios.debt_to_income) > 50 ? "Elevated Outflow" : "Affordable",
+            type: "Contextual Cash Flow Indicator",
+            interp: "Includes EMI plus general 12M debit transactions."
+          },
+          {
+            name: "Credit Bureau Score",
+            value: bureau.credit_score ? String(bureau.credit_score) : "N/A",
+            ref: "Benchmark: ≥ 650",
+            isRisk: bureau.credit_score < 650,
+            status: bureau.credit_score < 650 ? "Sub-prime" : "Prime",
+            type: "Model Champion Predictor",
+            interp: "External credit bureau repayment track record."
+          }
+        ];
+      }
+
+      grid.innerHTML = items.map(item => `
+        <div style="background: #F8FAFD; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 4px; margin-bottom: 2px;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--header-bg); line-height: 1.25;">${escapeHtml(item.name)}</span>
+            <span class="badge ${item.isRisk ? 'badge-high' : 'badge-low'}" style="font-size: 9.5px; padding: 1px 5px; white-space: nowrap;">${escapeHtml(item.status)}</span>
+          </div>
+          <div style="font-size: 14px; font-weight: 800; color: #1E293B; margin: 2px 0;">${escapeHtml(item.value)}</div>
+          <div style="font-size: 10px; color: var(--text-secondary); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.ref + ' - ' + item.interp)}">
+            ${escapeHtml(item.ref)} &middot; ${escapeHtml(item.type)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderOverviewAction(steps, overview, customerData) {
+      const act = overview?.recommended_action || customerData?.sas_model_results?.recommended_action || 'Routine Portfolio Monitoring';
+      const grd = overview?.model_risk_grade || customerData?.sas_model_results?.model_risk_grade || 'LOW';
+      
+      const badge = document.getElementById("overview-action-badge");
+      if (badge) {
+        badge.textContent = act;
+        badge.className = `badge badge-${grd.toLowerCase()}`;
+      }
+
+      const purposeEl = document.getElementById("overview-action-purpose");
+      if (purposeEl) {
+        purposeEl.textContent = steps?.action_purpose || 'Verify financial indicators and monitor repayment capacity.';
+      }
+
+      const checksContainer = document.getElementById("overview-action-checklist");
+      if (checksContainer) {
+        const checks = steps?.reviewer_verification_steps || [];
+        if (checks.length > 0) {
+          checksContainer.innerHTML = `
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              ${checks.slice(0, 2).map((c, i) => `
+                <div style="display: flex; align-items: baseline; gap: 4px; font-size: 11px; color: #334155;">
+                  <span style="color: var(--primary-action); font-weight: 700;">&#10003;</span>
+                  <span>${escapeHtml(c)}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          checksContainer.innerHTML = `
+            <div style="font-size: 11px; color: var(--text-secondary);">
+              Operational protocol: Maintain active surveillance on account cash flows; no adverse debt collection action permitted for performing borrowers.
+            </div>
+          `;
+        }
+      }
+    }
+
+    function renderUnifiedRiskIndicatorsTable(indicators, kris) {
+      const tbody = document.getElementById("risk-indicators-table-body");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      const kriMap = {};
+      if (kris && Array.isArray(kris)) {
+        kris.forEach(k => {
+          const key = (k.indicator || "").toLowerCase();
+          kriMap[key] = k;
+        });
+      }
+
+      const modelPredictorIds = new Set([
+        "flag_low_credit_score",
+        "flag_high_credit_utilization",
+        "flag_high_emi_burden",
+        "flag_company_financial_stress",
+        "flag_negative_turnover_growth",
+        "flag_previous_npa"
+      ]);
+
+      const baseList = [...(indicators || [])];
+      const sorted = baseList.sort((a, b) => {
+        if (a.is_active !== b.is_active) return b.is_active ? 1 : -1;
+        const aModel = modelPredictorIds.has(a.id);
+        const bModel = modelPredictorIds.has(b.id);
+        if (aModel !== bModel) return bModel ? 1 : -1;
+        return 0;
+      });
+
+      sorted.forEach(ind => {
+        const isModelInput = modelPredictorIds.has(ind.id);
+
+        let matchedKri = null;
+        for (const [key, kri] of Object.entries(kriMap)) {
+          if (ind.name.toLowerCase().includes(key) || key.includes(ind.name.toLowerCase())) {
+            matchedKri = kri;
+            break;
+          }
+          if (ind.id === "flag_high_emi_burden" && (key.includes("emi") || key.includes("outflow"))) {
+            matchedKri = kri;
+          } else if (ind.id === "flag_high_credit_utilization" && key.includes("utiliz")) {
+            matchedKri = kri;
+          } else if (ind.id === "flag_low_credit_score" && key.includes("score")) {
+            matchedKri = kri;
+          } else if (ind.id === "flag_previous_npa" && key.includes("npa")) {
+            matchedKri = kri;
+          } else if (ind.id === "flag_company_financial_stress" && key.includes("stress")) {
+            matchedKri = kri;
+          } else if (ind.id === "flag_negative_turnover_growth" && key.includes("turnover")) {
+            matchedKri = kri;
+          }
+        }
+
+        const interpretation = matchedKri ? matchedKri.interpretation : ind.explanation;
+        const observedText = matchedKri ? matchedKri.observed_value : ind.observed;
+        const thresholdText = matchedKri ? (matchedKri.threshold_reference || ind.threshold) : ind.threshold;
+        const isActive = ind.is_active;
+
+        const statusBadge = isActive
+          ? `<span class="badge badge-critical" style="font-size: 10px; padding: 2px 7px;">RISK WARNING</span>`
+          : `<span class="badge badge-low" style="font-size: 10px; padding: 2px 7px;">FAVOURABLE / PASS</span>`;
+
+        const typeBadge = isModelInput
+          ? `<span style="font-size: 9.5px; padding: 2px 6px; background: #EEF2FF; color: #4338CA; border-radius: 4px; font-weight: 700;">Champion Model Input</span>`
+          : `<span style="font-size: 9.5px; padding: 2px 6px; background: #F1F5F9; color: #475569; border-radius: 4px; font-weight: 600;">${escapeHtml(ind.category || "Contextual Indicator")}</span>`;
+
+        const tr = document.createElement("tr");
+        if (isActive) tr.className = "row-active-risk";
+        tr.style.borderBottom = "1px solid #EDF2F7";
+        tr.innerHTML = `
+          <td style="padding: 8px 10px; font-weight: 700; color: var(--header-bg);">${escapeHtml(ind.name)}</td>
+          <td style="padding: 8px 10px;">${statusBadge}</td>
+          <td style="padding: 8px 10px; font-weight: 700; color: ${isActive ? 'var(--risk-critical)' : '#1E293B'};">${escapeHtml(observedText)}</td>
+          <td style="padding: 8px 10px; color: var(--text-secondary); font-size: 11px;">${escapeHtml(thresholdText)}</td>
+          <td style="padding: 8px 10px;">${typeBadge}</td>
+          <td style="padding: 8px 10px; color: var(--text-main); font-size: 11px; line-height: 1.45;">
+            ${escapeHtml(interpretation)}
+            ${ind.evidence && ind.evidence !== observedText ? `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Evidence: ${escapeHtml(ind.evidence)}</div>` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAssessmentHistory(hist, mitigating) {
+      const container = document.getElementById("assessment-hist-body");
+      if (!container) return;
+      if (!hist || Object.keys(hist).length === 0) {
+        container.innerHTML = `<span style="color: var(--text-muted); font-size: 11px;">Prior loan repayment history unavailable.</span>`;
+        return;
+      }
+      container.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
+          <div><span style="color: var(--text-muted); font-size: 11px;">Prior NPA Record:</span> <strong style="color: #1E293B;">${escapeHtml(hist.previous_npa_event || 'None')}</strong></div>
+          <div><span style="color: var(--text-muted); font-size: 11px;">Resolution Status:</span> <strong style="color: #1E293B;">${escapeHtml(hist.repayment_pattern || 'N/A')}</strong></div>
+          <div><span style="color: var(--text-muted); font-size: 11px;">Prior Max / Avg DPD:</span> <strong style="color: #1E293B;">${escapeHtml(hist.prior_max_dpd || '0')} / ${escapeHtml(hist.prior_avg_dpd || '0.0')}</strong></div>
+          <div><span style="color: var(--text-muted); font-size: 11px;">Max Missed Streak:</span> <strong style="color: #1E293B;">${escapeHtml(hist.consecutive_missed_months || '0 mos')}</strong></div>
+        </div>
+        ${hist.summary_interpretation ? `
+          <div style="font-size: 11px; color: var(--text-main); background: #FFF; padding: 6px 8px; border-radius: 4px; border: 1px solid #E2E8F0; margin-bottom: 6px;">
+            ${escapeHtml(hist.summary_interpretation)}
+          </div>
+        ` : ''}
+        ${mitigating && mitigating.length > 0 ? `
+          <div style="margin-top: 6px;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--risk-low); margin-bottom: 3px;">Demonstrated Financial Resilience:</div>
+            <ul style="margin: 0; padding-left: 16px; font-size: 10.5px; color: var(--text-main);">
+              ${mitigating.map(m => `<li>${escapeHtml(m)}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function renderAssessmentNextSteps(steps, overview) {
+      const container = document.getElementById("assessment-steps-body");
+      if (!container) return;
+      if (!steps || Object.keys(steps).length === 0) {
+        container.innerHTML = `<span style="color: var(--text-muted); font-size: 11px;">Standard portfolio monitoring recommended.</span>`;
+        return;
+      }
+      const checks = steps.reviewer_verification_steps || [];
+      container.innerHTML = `
+        <div style="margin-bottom: 6px;">
+          <span style="color: var(--text-muted); font-size: 11px;">Action Purpose:</span>
+          <div style="font-weight: 600; color: #1E293B; font-size: 11.5px;">${escapeHtml(steps.action_purpose || 'Verify financial indicators and monitor capacity.')}</div>
+        </div>
+        ${checks.length > 0 ? `
+          <div style="margin-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 600; color: var(--header-bg);">Reviewer Verification Checklist:</span>
+            <ul style="margin: 3px 0 0; padding-left: 16px; font-size: 11px; color: var(--text-main);">
+              ${checks.map(c => `<li>${escapeHtml(c)}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        ${steps.customer_engagement_guidance ? `
+          <div style="font-size: 10.5px; color: #0369A1; background: #F0F9FF; border-left: 3px solid #0284C7; padding: 5px 8px; border-radius: 3px; margin-top: 6px;">
+            <strong>Engagement Protocol:</strong> ${escapeHtml(steps.customer_engagement_guidance)}
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function sanitizeRawConditions(text) {
+      if (!text) return "";
+      let s = String(text);
+      // Strip raw database variable condition parenthesis: (flag_previous_npa = 1), (flag_... = 0)
+      s = s.replace(/\s*\(\s*flag_[a-z0-9_]+\s*=\s*\d+\s*\)/gi, '');
+      // Strip standalone flag assignments: flag_previous_npa = 1
+      s = s.replace(/\s*flag_[a-z0-9_]+\s*=\s*\d+/gi, '');
+      // Strip synthetic flag assignments: with synthetic financial-stress flag = 1
+      s = s.replace(/\s*with\s+synthetic\s+[a-z0-9_\s-]+\s*=\s*\d+/gi, '');
+      s = s.replace(/\s*synthetic\s+[a-z0-9_\s-]+\s*=\s*\d+/gi, '');
+      // Strip mathematical threshold parentheses: (>= 60.0%), (>=60%), (< 10.0%), (<= 30%)
+      s = s.replace(/\s*\(\s*[><=]+\s*\d+(?:\.\d+)?%?\s*\)/g, '');
+      // Clean up any double commas or empty parens resulting from removal
+      s = s.replace(/\s*,\s*,/g, ',');
+      s = s.replace(/\(\s*,/g, '(');
+      s = s.replace(/,\s*\)/g, ')');
+      s = s.replace(/\(\s*\)/g, '');
+      s = s.replace(/[ \t]{2,}/g, ' ');
+
+      // Eliminate words: prototype, synthetic, demo
+      s = s.replace(/\bprototype\b/gi, 'analytical');
+      s = s.replace(/\bsynthetic\b/gi, 'internal');
+      s = s.replace(/\bdemo\b/gi, 'portfolio');
+      return s.trim();
+    }
+
+    function highlightAssessmentText(str) {
+      if (!str) return "";
+      let s = formatInlinePolicy(str);
+
+      // Risk Grades
+      s = s.replace(/\b(CRITICAL)\b/g, '<span class="hl-grade hl-grade-crit">CRITICAL</span>');
+      s = s.replace(/\b(HIGH)\b/g, '<span class="hl-grade hl-grade-high">HIGH</span>');
+      s = s.replace(/\b(MEDIUM)\b/g, '<span class="hl-grade hl-grade-med">MEDIUM</span>');
+      s = s.replace(/\b(LOW)\b/g, '<span class="hl-grade hl-grade-low">LOW</span>');
+
+      // Review Actions
+      s = s.replace(/\b(Urgent Credit Risk Assessment|Priority Credit Review|Periodic Risk Review|Routine Portfolio Monitoring)\b/g, '<strong class="hl-action">$1</strong>');
+
+      // Performing & On-time Indicators
+      s = s.replace(/\b(0\s*DPD|zero\s*DPD|0\s*days\s*past\s*due|zero\s*days\s*past\s*due)\b/gi, '<span class="hl-pos">$1</span>');
+      s = s.replace(/\b(fully\s+performing|performing)\b/gi, '<span class="hl-pos">$1</span>');
+      s = s.replace(/\b(on-time\s+EMIs|on-time\s+repayments|on-time\s+EMI\s+servicing)\b/gi, '<span class="hl-pos">$1</span>');
+
+      // Distress Indicators
+      s = s.replace(/\b(DISTRESSED|financially\s+distressed)\b/g, '<span class="hl-neg">$1</span>');
+      s = s.replace(/\b(CCC|CCC\+|CCC\-)\b/g, '<span class="hl-neg">$1</span>');
+
+      // Key historical metrics (cleanly highlighted)
+      s = s.replace(/\b(prior average DPD\s*(?:of)?\s*[\d.]+\s*days?)\b/gi, '<strong class="hl-warning">$1</strong>');
+      s = s.replace(/\b(prior maximum DPD\s*(?:of)?\s*[\d.]+\s*days?)\b/gi, '<strong class="hl-warning">$1</strong>');
+      s = s.replace(/\b(maximum consecutive missed months\s+\d+|\d+-month\s+consecutive\s+missed-payment\s+streak|\d+-month\s+historical\s+missed\s+streak)\b/gi, '<strong class="hl-warning">$1</strong>');
+      s = s.replace(/\b(historical missed-payment streak \(\d+\s*months\))\b/gi, '<strong class="hl-warning">$1</strong>');
+
+      // Numbers & Currency
+      s = s.replace(/(\b\d+(?:\.\d+)?%)/g, '<strong class="hl-num">$1</strong>');
+      s = s.replace(/(INR\s*[\d,]+(?:\.\d+)?)/gi, '<strong class="hl-num">$1</strong>');
+
+      // Prohibited Action Safeguards
+      s = s.replace(/(No\s+collections,\s+recovery,\s+or\s+enforcement\s+action\s+is\s+permitted[^\.\;]*\.?)/gi, '<span class="hl-safeguard">&#9888; $1</span>');
+      s = s.replace(/(Collections\s+or\s+recovery\s+proceedings\s+are\s+prohibited[^\.\;]*\.?)/gi, '<span class="hl-safeguard">&#9888; $1</span>');
+      s = s.replace(/(not\s+collections\s+or\s+recovery\s+actions[^\.\;]*\.?)/gi, '<span class="hl-safeguard">&#9888; $1</span>');
+
+      return s;
+    }
+
+    function splitSubItems(content) {
+      if (!content) return [];
+      let c = String(content).replace(/^\s*[\*_\-•]+\s*/, '').trim();
+      const rawParts = c.split(/;\s*|(?<=[.!?])\s+(?=[A-Z])|\n\s*[-*•]\s+/);
+      const items = [];
+      for (let p of rawParts) {
+        let t = p.trim().replace(/^[\*_\-•]+\s*/, '').replace(/[\*_\s]+$/, '').trim();
+        if (!t) continue;
+        t = t.replace(/^\d+[\.\)]\s*/, '');
+        if (t) {
+          t = t.charAt(0).toUpperCase() + t.slice(1);
+          if (!/[.!?]$/.test(t)) t += '.';
+          items.push(t);
+        }
+      }
+      return items;
+    }
+
+    function formatExecutiveAssessment(raw) {
+      if (!raw) return "";
+
+      const sanitized = sanitizeRawConditions(raw);
+      const sectionRegex = /(?:^|\n)\s*(?:[-*•]\s*)?(?:\*{1,2})?\s*(Primary Risk Drivers|Key Risk Drivers|Risk Drivers|Favourable & Mitigating Factors|Mitigating Factors|Favourable Factors|Review Assessment & Guidance|Recommended Guidance|Review Guidance)\s*(?:\*{1,2})?\s*:\s*/i;
+
+      if (sectionRegex.test(sanitized)) {
+        const lines = sanitized.split("\n");
+        let openingLines = [];
+        let currentSection = null;
+        let sections = {
+          drivers: [],
+          mitigating: [],
+          guidance: []
+        };
+
+        for (let line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed) continue;
+
+          const headerMatch = trimmed.match(/^(?:[-*•]\s*)?(?:\*{1,2})?\s*(Primary Risk Drivers|Key Risk Drivers|Risk Drivers|Favourable & Mitigating Factors|Mitigating Factors|Favourable Factors|Review Assessment & Guidance|Recommended Guidance|Review Guidance)\s*(?:\*{1,2})?\s*:\s*(.*)/i);
+          if (headerMatch) {
+            const title = headerMatch[1].toLowerCase();
+            let body = headerMatch[2].trim().replace(/^\*{1,2}\s*/, '');
+            if (title.includes("risk") || title.includes("driver")) {
+              currentSection = "drivers";
+            } else if (title.includes("favour") || title.includes("mitigat")) {
+              currentSection = "mitigating";
+            } else {
+              currentSection = "guidance";
+            }
+            if (body) {
+              sections[currentSection].push(...splitSubItems(body));
+            }
+          } else if (currentSection) {
+            const sub = trimmed.replace(/^[-*•]\s*/, '').replace(/^\*{1,2}\s*/, '');
+            sections[currentSection].push(...splitSubItems(sub));
+          } else {
+            openingLines.push(trimmed.replace(/^[-*•]\s*/, '').replace(/^\*{1,2}\s*/, ''));
+          }
+        }
+
+        let html = '';
+        if (openingLines.length > 0) {
+          html += `<div class="assessment-intro-p">${highlightAssessmentText(openingLines.join(' '))}</div>`;
+        }
+
+        html += `<div class="assessment-sections-grid">`;
+
+        if (sections.drivers.length > 0) {
+          html += `
+            <div class="assessment-block block-risk">
+              <div class="assessment-block-header">
+                <span class="block-icon">&#9888;</span>
+                <span class="block-title">Key Risk Drivers</span>
+              </div>
+              <ul class="assessment-item-list">
+                ${sections.drivers.map(d => `<li>${highlightAssessmentText(d)}</li>`).join('')}
+              </ul>
+            </div>
+          `;
+        }
+
+        if (sections.mitigating.length > 0) {
+          html += `
+            <div class="assessment-block block-mitigating">
+              <div class="assessment-block-header">
+                <span class="block-icon">&#10004;</span>
+                <span class="block-title">Favourable & Mitigating Factors</span>
+              </div>
+              <ul class="assessment-item-list">
+                ${sections.mitigating.map(m => `<li>${highlightAssessmentText(m)}</li>`).join('')}
+              </ul>
+            </div>
+          `;
+        }
+
+        if (sections.guidance.length > 0) {
+          html += `
+            <div class="assessment-block block-guidance">
+              <div class="assessment-block-header">
+                <span class="block-icon">&#9733;</span>
+                <span class="block-title">Review Assessment & Guidance</span>
+              </div>
+              <ul class="assessment-item-list">
+                ${sections.guidance.map(g => `<li>${highlightAssessmentText(g)}</li>`).join('')}
+              </ul>
+            </div>
+          `;
+        }
+
+        html += `</div>`;
+        return html;
+      }
+
+      // Fallback for paragraph text without explicit section headers
+      const sentences = sanitized.split(/(?<=[.!?])\s+(?=[A-Z])/);
+      if (sentences.length <= 3) {
+        return `<div class="assessment-intro-p">${highlightAssessmentText(sanitized)}</div>`;
+      }
+
+      const opening = [];
+      const riskDrivers = [];
+      const mitigating = [];
+      const recommendation = [];
+
+      for (let idx = 0; idx < sentences.length; idx++) {
+        const s = sentences[idx].trim();
+        if (!s) continue;
+        const lower = s.toLowerCase();
+        if (idx === 0) {
+          opening.push(s);
+        } else if (idx === 1 && (lower.includes("current") || lower.includes("performing") || lower.includes("0 dpd") || lower.includes("on-time"))) {
+          opening.push(s);
+        } else if (/\b(favour|favor|mitigat|resilien|strength|acceptable|satisfactory|fully repaid|closed as scheduled)\b/i.test(s)) {
+          mitigating.push(s);
+        } else if (/\b(warrant|recommend|review|collections|recovery|safeguard|human credit review)\b/i.test(s)) {
+          recommendation.push(s);
+        } else if (/\b(driver|distress|prior|delinquen|outflow|contraction|streak|burden|employer|decline|declining|weakens)\b/i.test(s)) {
+          riskDrivers.push(s);
+        } else if (opening.length < 2) {
+          opening.push(s);
+        } else {
+          riskDrivers.push(s);
+        }
+      }
+
+      let html = `<div class="assessment-intro-p">${highlightAssessmentText(opening.join(" "))}</div>`;
+      html += `<div class="assessment-sections-grid">`;
+
+      if (riskDrivers.length > 0) {
+        html += `
+          <div class="assessment-block block-risk">
+            <div class="assessment-block-header"><span class="block-icon">&#9888;</span><span class="block-title">Key Risk Drivers</span></div>
+            <ul class="assessment-item-list">${riskDrivers.map(d => `<li>${highlightAssessmentText(d)}</li>`).join('')}</ul>
+          </div>
+        `;
+      }
+      if (mitigating.length > 0) {
+        html += `
+          <div class="assessment-block block-mitigating">
+            <div class="assessment-block-header"><span class="block-icon">&#10004;</span><span class="block-title">Favourable & Mitigating Factors</span></div>
+            <ul class="assessment-item-list">${mitigating.map(m => `<li>${highlightAssessmentText(m)}</li>`).join('')}</ul>
+          </div>
+        `;
+      }
+      if (recommendation.length > 0) {
+        html += `
+          <div class="assessment-block block-guidance">
+            <div class="assessment-block-header"><span class="block-icon">&#9733;</span><span class="block-title">Review Assessment & Guidance</span></div>
+            <ul class="assessment-item-list">${recommendation.map(g => `<li>${highlightAssessmentText(g)}</li>`).join('')}</ul>
+          </div>
+        `;
+      }
+      html += `</div>`;
+      return html;
+    }
+
     // 6. Render Full AI Assessment & Policy Citations
     function renderAssessment(data) {
       const ast = data.assessment || {};
@@ -1983,9 +2678,9 @@
       document.getElementById("assessment-status-badge").textContent = "AI Evidence Verified";
       document.getElementById("assessment-status-badge").className = "badge badge-low";
 
-      // Narrative Executive Summary
-      const narrative = ast.executive_summary || "Structured assessment generated.";
-      document.getElementById("assessment-narrative-text").textContent = narrative;
+      // Narrative Executive Summary (Formatted in 2-3 statements + bullets with clear readable typography)
+      const narrative = ast.executive_assessment || ast.executive_summary || "Structured assessment generated.";
+      document.getElementById("assessment-narrative-text").innerHTML = formatExecutiveAssessment(narrative);
 
       // LLM SQL Query display
       const sqlBanner = document.getElementById("llm-sql-banner");
@@ -1997,8 +2692,19 @@
         sqlBanner.style.display = "none";
       }
 
+      // Render Overview Top Indicators & Action
+      renderOverviewTopIndicators(ast.key_risk_indicators, selectedCustomerData);
+      renderOverviewAction(ast.recommended_next_steps, ast.overview, selectedCustomerData);
+
+      // Render unified Risk Indicators & Rule Threshold in Tab 2 (Risk Drivers)
+      renderUnifiedRiskIndicatorsTable(selectedCustomerData?.all_risk_indicators, ast.key_risk_indicators);
+      renderAssessmentHistory(ast.previous_repayment_history, ast.mitigating_factors);
+      renderAssessmentNextSteps(ast.recommended_next_steps, ast.overview);
+      const sectionsBox = document.getElementById("assessment-drivers-sections-container");
+      if (sectionsBox) sectionsBox.style.display = "block";
+
       // TAB 4: Policies & Evidence
-      const act = ast.overview?.recommended_action || selectedCustomerData?.sas_model_results?.recommended_action || 'NORMAL MONITORING';
+      const act = ast.overview?.recommended_action || selectedCustomerData?.sas_model_results?.recommended_action || 'Routine Portfolio Monitoring';
       const grd = ast.overview?.model_risk_grade || selectedCustomerData?.sas_model_results?.model_risk_grade || 'LOW';
 
       document.getElementById("policy-action-explanation").innerHTML = `
@@ -2014,6 +2720,19 @@
         <p style="margin-top: 6px; font-size: 12.5px; line-height: 1.55; color: var(--text-main);">
           ${formatInlinePolicy(ast.recommended_action_explanation || 'Follow prescribed banking operational protocol.')}
         </p>
+        ${(ast.recommended_next_steps?.reviewer_verification_steps && ast.recommended_next_steps.reviewer_verification_steps.length > 0) ? `
+          <div style="margin-top: 10px; padding: 8px 12px; background: #F8FAFD; border: 1px solid var(--border-color); border-radius: 4px; font-size: 11.5px; color: #1E293B;">
+            <strong>Reviewer Verification Checklist:</strong>
+            <ul style="margin: 4px 0 0; padding-left: 18px; font-size: 11px;">
+              ${ast.recommended_next_steps.reviewer_verification_steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        ${ast.recommended_next_steps?.customer_engagement_guidance ? `
+          <div style="margin-top: 8px; padding: 6px 10px; background: #F0F9FF; border-left: 3px solid #0284C7; font-size: 11px; color: #0369A1; border-radius: 3px;">
+            <strong>Customer Engagement Guidance:</strong> ${escapeHtml(ast.recommended_next_steps.customer_engagement_guidance)}
+          </div>
+        ` : ''}
         ${ast.final_assessment ? `
           <div style="margin-top: 10px; padding: 8px 12px; background: #F8FAFD; border-left: 3px solid var(--primary-action); border-radius: 4px; font-size: 12px; color: #1E293B; line-height: 1.5;">
             <strong>Final Credit Assessment:</strong> ${formatInlinePolicy(ast.final_assessment)}

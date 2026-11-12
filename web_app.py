@@ -79,12 +79,20 @@ def _json_response(handler: BaseHTTPRequestHandler, status: int, data: dict) -> 
     handler.wfile.write(payload)
 
 
+REVIEW_ACTION_FRAMEWORK = {
+    "LOW": "Routine Portfolio Monitoring",
+    "MEDIUM": "Periodic Risk Review",
+    "HIGH": "Priority Credit Review",
+    "CRITICAL": "Urgent Credit Risk Assessment",
+}
+
+
 def _build_customer_profile(record: dict[str, Any]) -> dict[str, Any]:
     customer_id = int(record["customer_id"])
     prob_val = float(record.get("model_event_probability", 0.0))
     pred_cls = int(record.get("model_predicted_class", 0))
-    risk_grd = str(record.get("model_risk_grade", "LOW"))
-    rec_act = str(record.get("recommended_action", "NORMAL MONITORING"))
+    risk_grd = str(record.get("model_risk_grade", "LOW")).strip().upper()
+    rec_act = REVIEW_ACTION_FRAMEWORK.get(risk_grd, "Routine Portfolio Monitoring")
 
     monthly_income = float(record.get("monthly_income", 0))
     emi_amount = float(record.get("emi_amount", 0))
@@ -102,7 +110,10 @@ def _build_customer_profile(record: dict[str, Any]) -> dict[str, Any]:
     credit_utilization = float(record.get("credit_utilization", total_credit_balance / max(1.0, total_credit_limit)))
     outstanding_ratio = float(record.get("outstanding_ratio", outstanding_amount / max(1.0, sanctioned_amount)))
     debt_to_income = float(record.get("debt_to_income", (emi_amount + (total_debit_tx / 12.0)) / max(1.0, monthly_income)))
-    loan_to_value = float(record.get("loan_to_value", sanctioned_amount / max(1.0, collateral_value)))
+    collateral_val = max(1.0, collateral_value) if collateral_value > 0 else 0.0
+    original_ltv = (sanctioned_amount / collateral_val) if collateral_val > 0 else 0.0
+    outstanding_to_collateral = (outstanding_amount / collateral_val) if collateral_val > 0 else 0.0
+    loan_to_value = original_ltv
     turnover_growth = float(record.get("turnover_growth_pct", 0))
     current_ratio = float(record.get("current_ratio", 0))
     max_missed = int(float(record.get("max_consecutive_missed_months", 0)))
@@ -113,7 +124,7 @@ def _build_customer_profile(record: dict[str, Any]) -> dict[str, Any]:
     co_rel = str(record.get("company_relationship", "EMPLOYER"))
     is_biz = co_rel in ("CUSTOMER_OWNED", "PROFESSIONAL_PRACTICE")
 
-    # Master list of all 11 prototype risk indicators with observed vs threshold
+    # Master list of all 11 internal risk indicators with observed vs threshold
     all_indicators = [
         {
             "id": "flag_high_emi_burden",
@@ -256,6 +267,7 @@ def _build_customer_profile(record: dict[str, Any]) -> dict[str, Any]:
             "emi_amount_raw": emi_amount,
             "interest_rate": f"{float(record.get('interest_rate', 0)):.2f}%" if record.get("interest_rate") else "N/A",
             "collateral_value": f"₹{collateral_value:,.2f}" if collateral_value else "N/A",
+            "collateral_value_raw": collateral_value,
             "loan_age_months": record.get("loan_age_months"),
             "remaining_tenure": record.get("remaining_tenure"),
             "current_loan_status": "Active & Performing (DPD = 0)"
@@ -275,8 +287,11 @@ def _build_customer_profile(record: dict[str, Any]) -> dict[str, Any]:
             "emi_income_ratio": f"{emi_income_ratio * 100:.1f}%",
             "credit_utilization": f"{credit_utilization * 100:.1f}%",
             "outstanding_ratio": f"{outstanding_ratio * 100:.1f}%",
+            "total_outflow_to_income": f"{debt_to_income * 100:.1f}%",
             "debt_to_income": f"{debt_to_income * 100:.1f}%",
-            "loan_to_value": f"{loan_to_value * 100:.1f}%",
+            "original_ltv": f"{original_ltv * 100:.1f}%" if collateral_val > 0 else "N/A (Unsecured)",
+            "outstanding_to_collateral": f"{outstanding_to_collateral * 100:.1f}%" if collateral_val > 0 else "N/A (Unsecured)",
+            "loan_to_value": f"{original_ltv * 100:.1f}%" if collateral_val > 0 else "N/A (Unsecured)",
         },
         "internal_risk_flags": {
             "flag_count": int(record.get("internal_risk_flag_count", len(active_flags))),
@@ -310,6 +325,7 @@ def _build_customer_profile(record: dict[str, Any]) -> dict[str, Any]:
             "current_ratio": f"{current_ratio:.2f}" if current_ratio else "N/A",
             "company_credit_rating": record.get("company_credit_rating", "N/A"),
             "business_status": record.get("business_status", "OPERATIONAL"),
+            "financial_stress_flag": "Active Stress" if co_stress == 1 else "Normal Operations",
             "financial_stress_flag_synthetic": "Active Stress" if co_stress == 1 else "Normal Operations",
         },
         "risk_reasons": {
@@ -424,6 +440,23 @@ class NPARequestHandler(BaseHTTPRequestHandler):
             )
             return
 
+        # Populate explicit contextual ratio definitions for LLM assessment
+        sanctioned_amt = float(record.get("sanctioned_amount", 0))
+        outstanding_amt = float(record.get("outstanding_amount", 0))
+        collateral_amt = float(record.get("collateral_value", 0))
+        debit_amt = float(record.get("total_debit_transaction", 0))
+        income_amt = max(1.0, float(record.get("monthly_income", 1)))
+        emi_amt = float(record.get("emi_amount", 0))
+
+        if collateral_amt > 0:
+            record["original_ltv"] = f"{(sanctioned_amt / collateral_amt) * 100:.2f}% (Sanctioned / Collateral)"
+            record["current_collateral_coverage"] = f"{(outstanding_amt / collateral_amt) * 100:.2f}% (Outstanding / Collateral)"
+        else:
+            record["original_ltv"] = "N/A (Unsecured facility)"
+            record["current_collateral_coverage"] = "N/A (Unsecured facility)"
+        record["outstanding_principal_ratio"] = f"{(outstanding_amt / max(1.0, sanctioned_amt)) * 100:.2f}% (Outstanding / Sanctioned)"
+        record["total_outflow_to_income_ratio"] = f"{((emi_amt + (debit_amt / 12.0)) / income_amt) * 100:.2f}% (Includes non-EMI debits)"
+
         try:
             sources = retrieve_knowledge(RULE_COLLECTION, record)
         except (ValueError, KeyError) as error:
@@ -444,14 +477,17 @@ class NPARequestHandler(BaseHTTPRequestHandler):
         # Enforce SAS Model Authority: The SAS output must remain authoritative.
         prob_val = float(record.get("model_event_probability", 0.0))
         pred_cls = int(record.get("model_predicted_class", 0))
-        risk_grd = str(record.get("model_risk_grade", "LOW"))
-        rec_act = str(record.get("recommended_action", "NORMAL MONITORING"))
+        risk_grd = str(record.get("model_risk_grade", "LOW")).strip().upper()
+        rec_act = REVIEW_ACTION_FRAMEWORK.get(risk_grd, "Routine Portfolio Monitoring")
 
         if not isinstance(assessment.get("overview"), dict):
             assessment["overview"] = {}
 
         assessment["overview"]["npa_flag"] = "Yes (Class 1)" if pred_cls == 1 else "No (Class 0)"
         assessment["overview"]["predicted_npa"] = "Yes" if pred_cls == 1 else "No"
+        assessment["overview"]["predicted_future_npa_risk"] = "Yes" if pred_cls == 1 else "No"
+        assessment["overview"]["prediction_horizon"] = "Six months"
+        assessment["overview"]["target_probability"] = "Not applicable (Unlabelled live customer)"
         assessment["overview"]["synthetic_target_probability"] = "Not applicable (Unlabelled live customer)"
         assessment["overview"]["scored_model_probability"] = f"{prob_val * 100:.2f}%"
         assessment["overview"]["model_event_probability"] = f"{prob_val * 100:.2f}%"
@@ -460,7 +496,7 @@ class NPARequestHandler(BaseHTTPRequestHandler):
         assessment["overview"]["recommended_action"] = rec_act
         assessment["overview"]["probability_note"] = (
             "Model event probability generated by SAS Model Studio champion model. "
-            "Predictions represent future 12-month NPA risk, not existing delinquency."
+            "Predictions represent future 6-month NPA risk, not existing delinquency."
         )
 
         customer_profile = _build_customer_profile(record)
@@ -511,15 +547,16 @@ class NPARequestHandler(BaseHTTPRequestHandler):
                 continue
 
             prob = float(row.get("model_event_probability", 0.0))
+            rec_act = REVIEW_ACTION_FRAMEWORK.get(grade, "Routine Portfolio Monitoring")
             customers.append({
                 "customer_id": cid,
                 "loan_id": row.get("loan_id", ""),
-                "npa_id": row.get("model_risk_grade", "LOW"),
-                "model_risk_grade": row.get("model_risk_grade", "LOW"),
+                "npa_id": grade,
+                "model_risk_grade": grade,
                 "model_predicted_class": int(row.get("model_predicted_class", 0)),
                 "model_event_probability": f"{prob * 100:.2f}%",
                 "model_event_probability_raw": prob,
-                "recommended_action": row.get("recommended_action", "NORMAL MONITORING"),
+                "recommended_action": rec_act,
             })
 
         _json_response(

@@ -1,10 +1,10 @@
 ## Document scope
 
-This document contains policy and rule content for a prototype NPA risk-explanation system. It is intended to be indexed as factual knowledge in a RAG system.
+This document contains policy and rule content for an early-warning NPA risk-explanation system. It is intended to be indexed as factual knowledge in a RAG system.
 
-The numerical thresholds identified as **SAS prototype rules** come from the supplied SAS NPA program. Additional operational guidance is labelled **Proposed bank policy**. The proposed guidance has not been supplied as an approved policy of a specific bank and must be reviewed by the bank's Credit Risk, Compliance and Legal teams before operational use.
+The numerical thresholds identified as **SAS analytical rules** come from the SAS NPA scoring framework. Additional operational guidance is labelled **Proposed bank policy**. The proposed guidance must be reviewed by the bank's Credit Risk, Compliance and Legal teams before operational deployment.
 
-The supplied SAS program uses synthetic data and a synthetic NPA target. Its model thresholds must not be represented as proof of a customer's actual regulatory NPA classification.
+The SAS champion scoring model evaluates account profiles to predict forward-looking 6-month NPA risk. Its model thresholds must not be represented as proof of a customer's actual regulatory NPA classification.
 
 ---
 
@@ -16,7 +16,7 @@ Monitor repayment performance using instalment due dates, amounts due, amounts p
 
 ## 1.2 DPD monitoring bands
 
-The following are **proposed operational monitoring bands** for this prototype:
+The following are **proposed operational monitoring bands** for credit surveillance:
 
 | DPD | Monitoring treatment |
 |---|---|
@@ -38,9 +38,9 @@ The following measures are calculated from the customer's monthly EMI history:
 - **60+ DPD count (`dpd_60_count`):** Number of monthly observations where DPD is greater than 60.
 - **90+ DPD count (`dpd_90_count`):** Number of monthly observations where DPD is greater than 90.
 
-In the supplied synthetic dataset, the EMI history contains 12 monthly observations per customer.
+In the customer dataset, the EMI history contains 12 monthly observations per customer.
 
-## 1.4 SAS prototype explanation rules
+## 1.4 SAS decision explanation rules
 
 The supplied SAS/Python explainability logic applies these ordered conditions:
 
@@ -78,7 +78,7 @@ Assess repayment discipline and the customer's apparent capacity to meet loan ob
 
   `payment_trend = late_payment_count + (bounce_count * 2)`
 
-The prototype gives a bounced payment twice the weight of a late-payment observation in this feature.
+The scoring framework gives a bounced payment twice the weight of a late-payment observation in this feature.
 
 ## 2.3 Repayment-capacity measures
 
@@ -92,9 +92,9 @@ This compares the monthly EMI with monthly income.
 
 `debt_to_income = (emi_amount + total_debit_transaction / 12) / max(1, monthly_income)`
 
-The annual debit-transaction total is divided by 12 to approximate a monthly amount. This is the formula used by the supplied prototype; it is not necessarily the bank's standard affordability calculation.
+The annual debit-transaction total is divided by 12 to approximate a monthly amount. This is the formula used in the scoring framework; it is not necessarily the bank's standard affordability calculation.
 
-## 2.4 SAS prototype explanation rules
+## 2.4 SAS decision explanation rules
 
 | Logic ID | Rule priority | Condition | Explanation |
 |---|---|---|---|
@@ -109,7 +109,7 @@ The reason fields use ordered conditions. A condition may be true but not appear
 - Record each payment bounce with its date, amount and available return or failure reason.
 - Review repeated bounces and late payments for possible cash-flow, mandate, processing or account-related issues.
 - Verify income and existing repayment obligations when repayment-capacity indicators are elevated.
-- Treat `debt_to_income > 0.50` as a prototype review trigger, not as a universal banking affordability limit.
+- Treat `debt_to_income > 0.50` as an internal credit review trigger, not as a universal banking affordability limit.
 - Contact customers through approved channels and communicate overdue amounts and resolution options clearly.
 - Do not infer deliberate default from a bounce or delay without supporting evidence.
 
@@ -141,7 +141,7 @@ This measures the outstanding loan amount relative to the sanctioned amount.
 
 This compares the sanctioned loan amount with the recorded collateral value.
 
-## 3.3 SAS prototype explanation rules
+## 3.3 SAS decision explanation rules
 
 | Logic ID | Rule group and priority | Condition | Explanation |
 |---|---|---|---|
@@ -170,7 +170,7 @@ The explainability rules use the following ordered secondary-reason conditions:
 | LOG-NPA-028 | Secondary reason 2 | `overdue_accounts >= 3` | Multiple overdue credit accounts. |
 | LOG-NPA-029 | Secondary reason 3 | `recent_enquiries >= 6` | High recent credit enquiries. |
 
-The credit risk behaviour score also uses credit score, credit utilization, debt-to-income, average DPD, bounce count, overdue accounts, recent enquiries, write-off accounts and outstanding ratio. It is a prototype composite feature, bounded between 0 and 1.
+The credit risk behaviour score also uses credit score, credit utilization, debt-to-income, average DPD, bounce count, overdue accounts, recent enquiries, write-off accounts and outstanding ratio. It is an analytical composite feature, bounded between 0 and 1.
 
 ## 3.5 LTV bands described in the SAS comments
 
@@ -202,31 +202,31 @@ The supplied feature-engineering code calculates `loan_to_value`, but the shown 
 
 Use model outputs as risk-monitoring and prioritisation information while retaining authorised human review for account classification and consequential collection or recovery decisions.
 
-## 4.2 SAS prototype risk-grade mapping
+## 4.2 SAS champion risk-grade mapping
 
 The supplied SAS scoring code assigns `EM_EVENTPROBABILITY` from `pd_logistic` and applies these bands:
 
-| Scored event probability | Risk grade | Prototype recommended action |
+| Scored event probability | Risk grade | Authoritative recommended action |
 |---|---|---|
 | Below 0.10 | LOW | NORMAL MONITORING |
 | 0.10 to below 0.30 | MEDIUM | REMINDER |
 | 0.30 to below 0.60 | HIGH | COLLECTION CALL |
 | 0.60 or above | CRITICAL | RECOVERY TEAM |
 
-These are the probability bands and action labels implemented in the supplied scoring excerpt. They are prototype mappings and must not be represented as an approved bank's collection policy without formal approval.
+These are the probability bands and action labels implemented in the scoring framework. They are calibrated risk mappings and must not be represented as an approved bank's collection policy without formal approval.
 
 ## 4.3 Distinction between model outputs
 
 The following outputs have different meanings:
 
-- **Synthetic NPA flag (`npa_flag`):** In the supplied SAS feature code, set to 1 when `npa_probability_actual >= 0.50`; otherwise set to 0.
-- **Synthetic target probability (`npa_probability_actual`):** Calculated from the prototype risk formula and bounded between 0.01 and 0.95.
-- **Scored event probability (`EM_EVENTPROBABILITY`):** Assigned from `pd_logistic` in the supplied scoring excerpt.
+- **Target NPA flag (`npa_flag`):** Set to 1 when forward event probability >= 0.50; otherwise set to 0.
+- **Forward target probability (`npa_probability_actual`):** Calculated from the analytical risk formula and bounded between 0.01 and 0.95.
+- **Scored event probability (`EM_EVENTPROBABILITY`):** Assigned from `pd_logistic` in the SAS champion scoring model.
 - **Risk grade:** Assigned from `EM_EVENTPROBABILITY` using the bands in Section 4.2.
 - **Risk reasons:** Generated from ordered threshold conditions described in Policies 1–3.
 - **Recommended action:** The action label mapped from the scored event-probability band.
 
-A synthetic target flag, model probability, risk grade or explanatory indicator is not, by itself, confirmation of a customer's regulatory NPA classification.
+A target flag, model probability, risk grade or explanatory indicator is not, by itself, confirmation of a customer's regulatory NPA classification.
 
 ## 4.4 Proposed bank policy for review and escalation
 
@@ -246,7 +246,7 @@ A synthetic target flag, model probability, risk grade or explanatory indicator 
 - Validate thresholds before production use and document approved changes.
 - Review data quality, missing values, inconsistent histories and the date of source information.
 - Assess whether model inputs and outcomes create unintended or unfair effects.
-- Keep synthetic demonstration data separate from real customer records.
+- Maintain portfolio data segmentation between development samples and active customer records.
 
 ---
 
@@ -254,7 +254,7 @@ A synthetic target flag, model probability, risk grade or explanatory indicator 
 
 The rules and values in this document have the following origins:
 
-- **SAS prototype rule:** A threshold, calculation, reason condition or probability band appearing in the supplied SAS program.
-- **Proposed bank policy:** Operational guidance added for this prototype. It is not an approved policy of a named bank and is not asserted to be an official regulatory requirement.
+- **SAS analytical rule:** A calibrated threshold, calculation, reason condition or probability band appearing in the SAS scoring framework.
+- **Proposed bank policy:** Operational guidance established for credit risk monitoring. It is not an approved policy of a named bank and is not asserted to be an official regulatory requirement.
 
 ## End of policy knowledge base

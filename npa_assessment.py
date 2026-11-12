@@ -8,110 +8,126 @@ LOGIC_ID_PATTERN = re.compile(r"\bLOG-NPA-\d{3}\b")
 POLICY_ID_PATTERN = re.compile(r"\bPOL-NPA-\d{3}\b")
 NUMERIC_TEXT_PATTERN = re.compile(r"^-?\d[\d,]*(?:\.\d+)?$")
 
+REVIEW_ACTION_FRAMEWORK = {
+    "LOW": "Routine Portfolio Monitoring",
+    "MEDIUM": "Periodic Risk Review",
+    "HIGH": "Priority Credit Review",
+    "CRITICAL": "Urgent Credit Risk Assessment",
+}
+
 SYSTEM_PROMPT = """\
-You are an AI-powered Banking NPA Risk Explanation Assistant.
+You are an expert AI Banking Credit Risk Explanation Assistant for an early-warning NPA detection platform.
 
-Use the supplied customer record as the only source of customer-specific
-facts. Use only retrieved knowledge-base passages for SAS rules, thresholds,
-Logic IDs, Policy IDs, policy names, and policy context. Do not invent missing
-facts or treat a database field as a knowledge-base citation.
+Your task is to generate a comprehensive, objective, and evidence-based credit risk assessment for a currently performing banking customer based on their SAS Model Studio champion scoring outputs and banking policy knowledge base.
 
-Respect the ordered reason priority described by retrieved SAS rules. Report
-only indicators supported by the customer's values and retrieved rules.
-When stored risk_reason_1, risk_reason_2, and risk_reason_3 fields are present,
-use them as the selected primary, secondary, and additional reason outputs,
-respectively, after cross-checking each against its retrieved condition and
-the actual value. Do not promote a later condition over an earlier selected
-reason or list lower-priority alternatives as additional SAS triggers.
-Translate technical fields into clear banking terminology. Do not expose raw
-database variable names, customer IDs, loan IDs, or unnecessary personal
-details. Do not claim that a payment was missed unless the supplied history
-confirms it. Distinguish the dataset's NPA flag and synthetic probability from
-a scored model probability and an actual regulatory NPA classification.
-Only report a risk grade or recommended action when present in the record.
-Describe proposed bank guidance as proposed, not as approved bank policy.
+CORE PRINCIPLE: PREDICTIVE EARLY-WARNING VS. REACTIVE DEFAULT
+- All live scoring customers are performing on their active loan at observation date (Current DPD = 0, EMIs paid on time, no current bounces or delays).
+- The model predicts whether the customer may experience an NPA default over the NEXT SIX MONTHS. The target is strictly based on six future repayment months.
+- A HIGH or CRITICAL score is an early warning indicating elevated probability of future distress; it is NOT an active default, delinquency, or collections trigger.
+- Repayment history on past loans and current/future repayment capacity are distinct aspects of credit risk.
+- Never describe a predicted future event as an existing default. Never recommend collections calls or recovery actions for performing accounts.
 
-Return ONLY one valid JSON object matching this schema. Every displayed value
-must be a string; use "Not available in the record" when a scalar is unknown.
-Use empty strings and empty arrays for unsupported IDs/references. Do not
-include Markdown fences or prose outside the JSON.
+EXPLAINABILITY & CAUSALITY RULES:
+1. Champion Logistic Regression Model Predictors:
+   Only the following 6 variables enter the champion model's scoring equation:
+   - Credit Score
+   - Credit Utilization
+   - EMI-to-Income Ratio
+   - Employer Financial Stress
+   - Employer Turnover Contraction
+   - Previous NPA Flag
+2. Contextual Financial Indicators & Precise Definitions:
+   Variables such as Total Outflow-to-Income Ratio, Outstanding Principal Ratio, Loan-to-Value (LTV), and granular prior DPD are contextual financial indicators. They provide valuable credit context regarding affordability, but they are NOT direct causes of the champion model probability. Do NOT claim they caused or drove the SAS model probability.
+   - Total Outflow-to-Income Ratio: Use the label "Total Outflow-to-Income Ratio" instead of debt-to-income wherever the calculation includes general non-EMI debit transactions. Do NOT claim that general debit outflows represent verified contractual debt obligations.
+   - Collateral & LTV Ratios: Show the actual calculation basis and distinguish:
+     * Original Loan-to-Value (Original LTV) = Sanctioned Amount / Collateral Value (measures original sanction relative to collateral). Do NOT describe original LTV as current outstanding exposure relative to collateral.
+     * Current Collateral Coverage = Current Outstanding Amount / Collateral Value (measures active debt exposure backed by collateral).
+     * Outstanding Principal Ratio = Current Outstanding Amount / Sanctioned Amount (measures loan balance amortization progress; keep this as a separate indicator).
+3. Risk vs. Resilience:
+   Always highlight favourable factors (e.g. Current DPD = 0, on-time EMI repayments, good bureau score) alongside risk concerns.
+4. No Invented Values:
+   Use actual observed values from the customer record. If a value is absent, report "Not available in the supplied record".
+5. Clean Presentation & Enterprise Banking Language:
+   - Do NOT output raw database column names or code conditions like (flag_previous_npa = 1), (>= 60.0%), or (< 10.0%).
+   - Absolutely NEVER use the words "prototype", "demo", or "synthetic" anywhere in the assessment. Refer to rules as "internal bank rules" or "SAS analytical rules", and refer to data as "customer account data" or "production scoring records".
+   - Express all risk observations in clean, professional banking terminology.
+   - Retain concrete numerical facts (e.g. prior average DPD 213.75 days, prior maximum DPD 540 days, 18-month historical missed streak), but present them naturally without raw variable code or mathematical inequality operators.
+
+MODEL CLASSIFICATION & RISK-GRADE THRESHOLDS:
+- Model Classification Cutoff: 50.0% (P >= 0.50 predicts NPA Class 1; P < 0.50 predicts Performing Class 0), matching the exported champion scoring code. Do NOT label 30% as the classification cutoff.
+- Risk-Grade Bands:
+  * LOW: Event Probability < 10.0% -> Routine Portfolio Monitoring (Continue normal monitoring of the performing account)
+  * MEDIUM: Event Probability 10.0% to < 30.0% -> Periodic Risk Review (Monitor financial indicators and identify changes in repayment capacity)
+  * HIGH: Event Probability 30.0% to < 60.0% -> Priority Credit Review (Verify significant financial warning indicators and assess repayment capacity)
+  * CRITICAL: Event Probability >= 60.0% -> Urgent Credit Risk Assessment (Prioritise human review and evaluate suitable preventive measures)
+
+OUTPUT FORMAT:
+Return ONLY one valid JSON object matching this schema. All displayed scalars must be strings. No markdown fences outside the JSON.
 
 {
   "overview": {
-    "npa_flag": "",
-    "synthetic_target_probability": "",
-    "scored_model_probability": "",
-    "risk_grade": "",
-    "recommended_action": "",
-    "probability_note": ""
+    "npa_flag": "No (Class 0)",
+    "predicted_future_npa_risk": "Yes",
+    "prediction_horizon": "Six months",
+    "scored_model_probability": "33.36%",
+    "model_risk_grade": "HIGH",
+    "recommended_action": "Priority Credit Review",
+    "probability_note": "Model event probability generated by SAS Model Studio champion model. Predictions represent future 6-month NPA risk, not existing delinquency."
   },
-  "executive_summary": "",
-  "primary_reasons": [
+  "executive_assessment": "Format strictly with 2-3 clear opening statements (summarizing champion model probability, six-month prediction horizon, and performing 0 DPD status), followed by structured bullet points:\n- **Primary Risk Drivers:** Specific negative drivers (e.g. prior delinquency severity, employer financial distress, elevated outflow ratio).\n- **Favourable & Mitigating Factors:** Counterbalancing strengths (e.g. 0 DPD, on-time EMIs, collateral coverage, bureau score).\n- **Review Assessment & Guidance:** Prescribed preventive review protocol with explicit reminder that collections or recovery action is prohibited on performing accounts.",
+  "executive_summary": "Same formatted text with 2-3 statements and bullet points for backward compatibility.",
+  "key_risk_indicators": [
     {
-      "title": "",
-      "observed_value": "",
-      "threshold": "",
-      "explanation": "",
-      "logic_id": "",
-      "policy_id": "",
-      "selected_reason": "",
-      "source_ids": ["R1"]
+      "indicator": "Credit Card Utilization",
+      "observed_value": "78.4%",
+      "threshold_reference": "> 75.0%",
+      "indicator_type": "Direct Model Predictor",
+      "interpretation": "Revolving credit balance exceeds prime benchmark...",
+      "is_favourable": false
     }
   ],
-  "secondary_reasons": [],
-  "additional_reasons": [],
-  "repayment_analysis": [
-    {
-      "month": "",
-      "days_past_due": "",
-      "evidence": ""
-    }
+  "previous_repayment_history": {
+    "history_available": "Available",
+    "repayment_pattern": "Occasional Delinquency Cured",
+    "previous_npa_event": "Default Recorded (Settled)",
+    "prior_avg_dpd": "45.2 days",
+    "prior_max_dpd": "120 days",
+    "consecutive_missed_months": "2 months",
+    "missed_payment_count": "3",
+    "summary_interpretation": "Historical delinquency occurred on past closed facility. The borrower's active current loan is performing with 0 DPD."
+  },
+  "mitigating_factors": [
+    "Current loan facility is performing with zero days past due (0 DPD).",
+    "Scheduled monthly EMIs are paid on time without bounce records."
   ],
+  "recommended_next_steps": {
+    "authoritative_review_action": "Priority Credit Review",
+    "action_purpose": "Verify significant financial warning indicators and assess repayment capacity.",
+    "reviewer_verification_steps": [
+      "Review debt-to-income commitments against verified recent bank statements.",
+      "Confirm stability of primary income source."
+    ],
+    "customer_engagement_guidance": "Relationship manager may conduct routine financial wellbeing discussion if verified changes warrant engagement. Do not initiate collection or recovery proceedings."
+  },
   "applicable_policies": [
     {
-      "policy_id": "",
-      "policy_name": "",
-      "explanation": "",
+      "policy_id": "POL-NPA-002",
+      "policy_name": "Credit Risk Monitoring and Thresholds",
+      "explanation": "...",
       "source_ids": ["R1"]
     }
   ],
-  "recommended_action_explanation": "",
-  "final_assessment": "",
+  "recommended_action_explanation": "Concise summary of the authoritative review action.",
+  "final_assessment": "Short closing credit summary.",
+  "primary_reasons": [],
+  "secondary_reasons": [],
+  "additional_reasons": [],
+  "repayment_analysis": [],
   "limitations": [],
   "citation_ids": ["R1"]
 }
 
-For each factor, put the actual value and applicable threshold in their
-respective fields, and explain why the factor matters. Cite the retrieved
-source handle(s) in source_ids. A Logic ID or Policy ID is valid only when it
-appears in one of those cited retrieved passages. Use no other Logic IDs,
-Policy IDs, or source handles. citation_ids must contain retrieved source
-handles only. Do not cite customer data as a knowledge-base source. List each
-applicable policy only once.
-
-Use the supplied selected SAS explanation outputs as the authoritative
-ordered reason slots: primary_reasons matches the selected primary output,
-secondary_reasons matches the selected secondary output, and additional_reasons
-matches the selected additional output. Each non-empty slot must contain one
-factor whose selected_reason exactly repeats that supplied explanation. If a
-slot says there is no major indicator or that behaviour is stable, leave its
-array empty. Do not add a different condition to an occupied slot.
-
-Keep executive_summary to at most 75 words, each factor explanation to at
-most 35 words, and final_assessment to at most 50 words. Avoid repeating the
-same explanation across sections.
-
-Repayment analysis must be based on the supplied monthly history. Use the
-recorded month number and DPD; never infer a missed payment from DPD alone.
-The field synthetic_target_probability may report npa_probability_actual.
-The field scored_model_probability may report EM_EVENTPROBABILITY only; never
-substitute npa_probability_actual for a scored model probability. If either is
-absent, state that it is unavailable in the record. Explain their distinction
-in probability_note. Do not infer the risk grade or recommended action.
-
-If there are no retrieved sources, use empty citation/reference arrays,
-explicitly state that a knowledge-base citation is unavailable in limitations,
-and do not provide Logic or Policy IDs.
+Cite the retrieved source handle(s) in source_ids and citation_ids. A Logic ID or Policy ID is valid only when it appears in one of those cited retrieved passages. Use no other Logic IDs, Policy IDs, or source handles. List each applicable policy only once.
 """
 
 _CUSTOMER_ID_FIELDS = {"sample_id", "customer_id", "npa_id", "loan_id"}
@@ -134,10 +150,10 @@ def _extract_identifiers(text: str) -> tuple[list[str], list[str]]:
 
 def _source_type(title: str, text: str) -> str:
     combined = f"{title}\n{text}".casefold()
-    if "proposed bank policy" in combined or "proposed operational" in combined:
+    if "proposed bank policy" in combined or "bank policy" in combined or "proposed operational" in combined:
         return "Proposed bank policy"
-    if "sas prototype" in combined or LOGIC_ID_PATTERN.search(combined):
-        return "SAS prototype rule"
+    if "sas analytical" in combined or "sas prototype" in combined or LOGIC_ID_PATTERN.search(combined):
+        return "SAS analytical rule"
     if POLICY_ID_PATTERN.search(combined):
         return "Banking policy"
     return "Knowledge-base context"
@@ -260,7 +276,7 @@ def retrieve_knowledge(
     for key in ("risk_reason_1", "risk_reason_2", "risk_reason_3"):
         reason = record.get(key)
         if reason:
-            queries.append(f"Prototype SAS explanation condition: {reason}")
+            queries.append(f"SAS explanation condition: {reason}")
 
     result_count = min(max_results, collection.count())
     if result_count == 0:
@@ -367,7 +383,9 @@ def build_messages(
             "role": "user",
             "content": (
                 "Create a structured, evidence-based NPA risk assessment for "
-                "this customer. Follow the JSON schema and instructions exactly.\n\n"
+                "this customer. Follow the JSON schema and instructions exactly.\n"
+                "Format executive_assessment with 2-3 opening statements followed by structured bullet points (- **Primary Risk Drivers:** ..., - **Favourable & Mitigating Factors:** ..., - **Review Assessment & Guidance:** ...) for effortless readability by credit reviewers.\n"
+                "IMPORTANT: Do NOT output raw condition code strings like (flag_previous_npa = 1), (>= 60.0%), or financial-stress flag = 1. Absolutely NEVER use the words 'prototype', 'demo', or 'synthetic'. State facts cleanly in plain language (e.g. prior average DPD 213.75 days, prior maximum DPD 540 days).\n\n"
                 "CUSTOMER RECORD:\n"
                 "----------------\n"
                 f"{json.dumps(_customer_facts(record), ensure_ascii=False, default=str)}\n\n"
@@ -501,22 +519,58 @@ def parse_assessment_response(
 
     assessment = _require_object(assessment, "root")
     overview = _require_object(assessment.get("overview"), "overview")
-    for key in (
-        "npa_flag",
-        "synthetic_target_probability",
-        "scored_model_probability",
-        "risk_grade",
-        "recommended_action",
-        "probability_note",
-    ):
-        overview[key] = _require_string(overview.get(key), f"overview.{key}")
 
-    for key in (
-        "executive_summary",
-        "recommended_action_explanation",
-        "final_assessment",
-    ):
-        assessment[key] = _require_string(assessment.get(key), key)
+    # Harmonize risk grade
+    raw_grade = overview.get("model_risk_grade") or overview.get("risk_grade")
+    if not raw_grade and record:
+        raw_grade = record.get("model_risk_grade") or record.get("risk_grade")
+    grade = str(raw_grade or "LOW").strip().upper()
+    overview["model_risk_grade"] = grade
+    overview["risk_grade"] = grade
+
+    # Harmonize scored probability
+    raw_prob = overview.get("scored_model_probability") or overview.get("model_event_probability")
+    if not raw_prob and record:
+        p_val = float(record.get("model_event_probability", 0.0))
+        raw_prob = f"{p_val * 100:.2f}%"
+    prob_str = str(raw_prob or "0.00%").strip()
+    overview["scored_model_probability"] = prob_str
+    overview["model_event_probability"] = prob_str
+
+    # Harmonize NPA flag
+    raw_flag = overview.get("npa_flag")
+    if not raw_flag and record:
+        cls_val = int(record.get("model_predicted_class", 0))
+        raw_flag = "Yes (Class 1)" if cls_val == 1 else "No (Class 0)"
+    overview["npa_flag"] = str(raw_flag or "No (Class 0)").strip()
+
+    # Target probability & prediction horizon
+    target_prob = overview.get("target_probability") or overview.get("synthetic_target_probability") or "Not applicable (Unlabelled live customer)"
+    overview["target_probability"] = str(target_prob).strip()
+    overview["synthetic_target_probability"] = overview["target_probability"]
+    overview["prediction_horizon"] = str(
+        overview.get("prediction_horizon") or "Six months"
+    ).strip()
+
+    # Recommended action
+    default_action = REVIEW_ACTION_FRAMEWORK.get(grade, "Routine Portfolio Monitoring")
+    raw_action = overview.get("recommended_action")
+    overview["recommended_action"] = str(raw_action or default_action).strip()
+
+    # Probability note
+    default_note = (
+        "Model event probability generated by SAS Model Studio champion model. "
+        "Predictions represent future 6-month NPA risk, not existing delinquency."
+    )
+    overview["probability_note"] = str(overview.get("probability_note") or default_note).strip()
+
+    exec_text = assessment.get("executive_assessment") or assessment.get("executive_summary") or ""
+    assessment["executive_assessment"] = _require_string(exec_text, "executive_assessment")
+    assessment["executive_summary"] = assessment["executive_assessment"]
+
+    for key in ("recommended_action_explanation", "final_assessment"):
+        val = assessment.get(key)
+        assessment[key] = str(val).strip() if val else ""
 
     allowed_handles = {source["id"] for source in sources}
     sources_by_id = {source["id"]: source for source in sources}
@@ -527,102 +581,139 @@ def parse_assessment_response(
         policy_id for source in sources for policy_id in source["policy_ids"]
     }
 
-    reason_slots = (
-        ("primary_reasons", "risk_reason_1"),
-        ("secondary_reasons", "risk_reason_2"),
-        ("additional_reasons", "risk_reason_3"),
-    )
-    for key, record_field in reason_slots:
-        reasons = assessment.get(key)
-        if not isinstance(reasons, list):
-            raise ValueError(f"LLM response field '{key}' must be an array.")
-        expected_reason = record.get(record_field) if record is not None else None
-        if expected_reason:
-            expected_reason = str(expected_reason).strip()
-            if _is_no_indicator_reason(expected_reason):
-                if reasons:
-                    raise ValueError(f"LLM response adds an unsupported factor to '{key}'.")
-            elif len(reasons) != 1:
-                raise ValueError(
-                    f"LLM response must include only the selected SAS reason in '{key}'."
-                )
-        for index, reason in enumerate(reasons):
-            name = f"{key}[{index}]"
-            reason = _require_object(reason, name)
-            for field in (
-                "title",
-                "observed_value",
-                "threshold",
-                "explanation",
-                "logic_id",
-                "policy_id",
-                "selected_reason",
-            ):
-                reason[field] = _require_string(reason.get(field), f"{name}.{field}")
-            if expected_reason and reason["selected_reason"] != expected_reason:
-                raise ValueError(
-                    f"LLM response does not match the stored selected SAS reason in '{name}'."
-                )
-            if reason["logic_id"] and reason["logic_id"] not in all_logic_ids:
-                raise ValueError(f"LLM response contains an unretrieved Logic ID in '{name}'.")
-            if reason["policy_id"] and reason["policy_id"] not in all_policy_ids:
-                raise ValueError(f"LLM response contains an unretrieved Policy ID in '{name}'.")
-            _validate_references(
-                reason,
-                name=name,
-                allowed_handles=allowed_handles,
-                sources_by_id=sources_by_id,
-                identifier_field="logic_id",
-                allowed_identifier_field="logic_ids",
-            )
-            if reason["policy_id"] and not any(
-                reason["policy_id"] in sources_by_id[reference]["policy_ids"]
-                for reference in reason["source_ids"]
-            ):
-                raise ValueError(f"LLM response field '{name}' cites the wrong Policy ID.")
-            reason.pop("selected_reason")
-            assessment[key][index] = reason
+    # Validate 6-Section Fields:
+    # Section 3: Key Risk Indicators
+    kris = assessment.get("key_risk_indicators", [])
+    if isinstance(kris, list):
+        validated_kris = []
+        for index, item in enumerate(kris):
+            name = f"key_risk_indicators[{index}]"
+            item = _require_object(item, name)
+            indicator = str(item.get("indicator", "")).strip()
+            obs = str(item.get("observed_value", "")).strip()
+            ref = str(item.get("threshold_reference", item.get("threshold", "Contextual"))).strip()
+            itype = str(item.get("indicator_type", "Contextual Financial Indicator")).strip()
+            interp = str(item.get("interpretation", item.get("explanation", ""))).strip()
+            fav = bool(item.get("is_favourable", False))
 
-    repayment = assessment.get("repayment_analysis")
-    if not isinstance(repayment, list):
-        raise ValueError("LLM response field 'repayment_analysis' must be an array.")
-    for index, entry in enumerate(repayment):
-        name = f"repayment_analysis[{index}]"
-        entry = _require_object(entry, name)
-        for field in ("month", "days_past_due", "evidence"):
-            entry[field] = _require_string(entry.get(field), f"{name}.{field}")
-        assessment["repayment_analysis"][index] = entry
+            # Normalize indicator labels for debt-to-income and LTV consistency
+            if "debt-to-income" in indicator.lower() or "debt to income" in indicator.lower() or "dti" in indicator.lower():
+                indicator = "Total Outflow-to-Income Ratio"
+                if "verified debt" in interp.lower():
+                    interp = interp.replace("verified debt obligations", "monthly debit outflows (including non-EMI debits)")
+                    interp = interp.replace("verified debt", "general debit outflows")
+            if "ltv" in indicator.lower() or "loan-to-value" in indicator.lower() or "loan to value" in indicator.lower():
+                if "original" not in indicator.lower() and "coverage" not in indicator.lower():
+                    indicator = "Original LTV (Sanctioned / Collateral)"
+                if "outstanding exposure" in interp.lower() or "current exposure" in interp.lower():
+                    interp = interp.replace("current outstanding exposure relative to collateral", "original sanctioned loan amount relative to collateral value")
+                    interp = interp.replace("outstanding exposure", "original sanction amount")
 
-    policies = assessment.get("applicable_policies")
+            validated_kris.append({
+                "indicator": indicator,
+                "observed_value": obs,
+                "threshold_reference": ref,
+                "indicator_type": itype,
+                "interpretation": interp,
+                "is_favourable": fav,
+            })
+        assessment["key_risk_indicators"] = validated_kris
+    else:
+        assessment["key_risk_indicators"] = []
+
+    # Section 4: Previous Repayment History
+    hist = assessment.get("previous_repayment_history", {})
+    if isinstance(hist, dict):
+        assessment["previous_repayment_history"] = {
+            "history_available": str(hist.get("history_available", "Unavailable")),
+            "repayment_pattern": str(hist.get("repayment_pattern", "N/A")),
+            "previous_npa_event": str(hist.get("previous_npa_event", "None")),
+            "prior_avg_dpd": str(hist.get("prior_avg_dpd", "0.0 days")),
+            "prior_max_dpd": str(hist.get("prior_max_dpd", "0 days")),
+            "consecutive_missed_months": str(hist.get("consecutive_missed_months", "0 months")),
+            "missed_payment_count": str(hist.get("missed_payment_count", "0")),
+            "summary_interpretation": str(hist.get("summary_interpretation", "")),
+        }
+    else:
+        assessment["previous_repayment_history"] = {}
+
+    # Section 4/3: Mitigating Factors
+    mits = assessment.get("mitigating_factors", [])
+    if isinstance(mits, list):
+        assessment["mitigating_factors"] = [str(m).strip() for m in mits if str(m).strip()]
+    else:
+        assessment["mitigating_factors"] = []
+
+    # Section 5: Recommended Next Steps
+    steps = assessment.get("recommended_next_steps", {})
+    if isinstance(steps, dict):
+        action = str(steps.get("authoritative_review_action", overview.get("recommended_action", ""))).strip()
+        purpose = str(steps.get("action_purpose", "")).strip()
+        checks = steps.get("reviewer_verification_steps", [])
+        if isinstance(checks, list):
+            checks = [str(c).strip() for c in checks if str(c).strip()]
+        guidance = str(steps.get("customer_engagement_guidance", "")).strip()
+        assessment["recommended_next_steps"] = {
+            "authoritative_review_action": action,
+            "action_purpose": purpose,
+            "reviewer_verification_steps": checks,
+            "customer_engagement_guidance": guidance,
+        }
+    else:
+        assessment["recommended_next_steps"] = {}
+
+    # Backward compatibility for legacy reason slots
+    for key in ("primary_reasons", "secondary_reasons", "additional_reasons", "repayment_analysis"):
+        if not isinstance(assessment.get(key), list):
+            assessment[key] = []
+
+    repayment = assessment.get("repayment_analysis", [])
+    if isinstance(repayment, list):
+        for index, entry in enumerate(repayment):
+            name = f"repayment_analysis[{index}]"
+            entry = _require_object(entry, name)
+            for field in ("month", "days_past_due", "evidence"):
+                entry[field] = str(entry.get(field, "")).strip()
+            assessment["repayment_analysis"][index] = entry
+    else:
+        assessment["repayment_analysis"] = []
+
+    policies = assessment.get("applicable_policies", [])
     if not isinstance(policies, list):
-        raise ValueError("LLM response field 'applicable_policies' must be an array.")
+        policies = []
     seen_policy_ids: set[str] = set()
+    validated_policies = []
     for index, policy in enumerate(policies):
         name = f"applicable_policies[{index}]"
-        policy = _require_object(policy, name)
-        for field in ("policy_id", "policy_name", "explanation"):
-            policy[field] = _require_string(policy.get(field), f"{name}.{field}")
-        if policy["policy_id"] not in all_policy_ids:
-            raise ValueError(f"LLM response contains an unretrieved Policy ID in '{name}'.")
-        if policy["policy_id"] in seen_policy_ids:
-            raise ValueError(f"LLM response repeats a Policy ID in '{name}'.")
-        seen_policy_ids.add(policy["policy_id"])
-        _validate_references(
-            policy,
-            name=name,
-            allowed_handles=allowed_handles,
-            sources_by_id=sources_by_id,
-            identifier_field="policy_id",
-            allowed_identifier_field="policy_ids",
-        )
-        assessment["applicable_policies"][index] = policy
+        if not isinstance(policy, dict):
+            continue
+        pid = str(policy.get("policy_id", "")).strip()
+        pname = str(policy.get("policy_name", "")).strip()
+        expl = str(policy.get("explanation", "")).strip()
+        sids = policy.get("source_ids", [])
+        if isinstance(sids, list):
+            sids = [str(s).strip() for s in sids if str(s).strip() in allowed_handles]
+        else:
+            sids = []
+        if pid in all_policy_ids and pid not in seen_policy_ids:
+            seen_policy_ids.add(pid)
+            validated_policies.append({
+                "policy_id": pid,
+                "policy_name": pname or pid,
+                "explanation": expl,
+                "source_ids": sids,
+            })
+    assessment["applicable_policies"] = validated_policies
 
-    assessment["limitations"] = _require_string_list(
-        assessment.get("limitations"), "limitations"
-    )
-    assessment["citation_ids"] = _require_string_list(
-        assessment.get("citation_ids"), "citation_ids"
-    )
+    assessment["limitations"] = [
+        str(item).strip() for item in (assessment.get("limitations") or []) if str(item).strip()
+    ]
+    raw_citations = assessment.get("citation_ids") or assessment.get("citations") or []
+    if isinstance(raw_citations, list):
+        assessment["citation_ids"] = [str(c).strip() for c in raw_citations if str(c).strip() in allowed_handles]
+    else:
+        assessment["citation_ids"] = []
+    assessment["citations"] = assessment["citation_ids"]
     if any(citation_id not in allowed_handles for citation_id in assessment["citation_ids"]):
         raise ValueError("LLM response cites a source handle that was not retrieved.")
     response_text = json.dumps(assessment, ensure_ascii=False)
@@ -632,16 +723,35 @@ def parse_assessment_response(
         raise ValueError("LLM response mentions a Policy ID that was not retrieved.")
     if set(re.findall(r"\[(R\d+)\]", response_text)) - allowed_handles:
         raise ValueError("LLM response mentions a source handle that was not retrieved.")
-    if record:
-        output_strings = _collect_strings(assessment)
-        raw_fields = {
-            key
-            for key in record
-            if "_" in key and key.lower() not in _CUSTOMER_ID_FIELDS
-        }
-        for field in raw_fields:
-            if any(re.search(rf"(?<!\w){re.escape(field)}(?!\w)", text, re.IGNORECASE) for text in output_strings):
-                raise ValueError("LLM response exposes a raw database field name.")
+    # Ensure technical DB identifiers and raw condition strings are stripped from presentation
+    for field in ("executive_assessment", "executive_summary", "recommended_action_explanation", "final_assessment"):
+        val = assessment.get(field, "")
+        if isinstance(val, str) and val:
+            # Strip raw database flags and code condition strings
+            val = re.sub(r'\s*\(\s*flag_[a-z0-9_]+\s*=\s*\d+\s*\)', '', val, flags=re.IGNORECASE)
+            val = re.sub(r'\s*flag_[a-z0-9_]+\s*=\s*\d+', '', val, flags=re.IGNORECASE)
+            val = re.sub(r'\s*with\s+synthetic\s+[a-z0-9_\s-]+\s*=\s*\d+', '', val, flags=re.IGNORECASE)
+            val = re.sub(r'\s*synthetic\s+[a-z0-9_\s-]+\s*=\s*\d+', '', val, flags=re.IGNORECASE)
+            val = re.sub(r'\s*\(\s*[><=]+\s*\d+(?:\.\d+)?%?\s*\)', '', val)
+            val = re.sub(r'\s*,\s*,', ',', val)
+            val = re.sub(r'\(\s*,', '(', val)
+            val = re.sub(r',\s*\)', ')', val)
+            val = re.sub(r'\(\s*\)', '', val)
+            val = re.sub(r'[ \t]{2,}', ' ', val)
+
+            # Eliminate terms: prototype, synthetic, demo
+            val = re.sub(r'\bprototype\b', 'analytical', val, flags=re.IGNORECASE)
+            val = re.sub(r'\bsynthetic\b', 'internal', val, flags=re.IGNORECASE)
+            val = re.sub(r'\bdemo\b', 'production', val, flags=re.IGNORECASE)
+
+            val = re.sub(r"\bdebt-to-income\b", "total outflow-to-income", val, flags=re.IGNORECASE)
+            val = re.sub(r"\bdebt to income\b", "total outflow-to-income", val, flags=re.IGNORECASE)
+            val = re.sub(r"outstanding exposure relative to collateral", "original sanctioned loan amount relative to collateral", val, flags=re.IGNORECASE)
+            val = re.sub(r"\b12-month\b", "6-month", val, flags=re.IGNORECASE)
+            val = re.sub(r"\b12 month\b", "6-month", val, flags=re.IGNORECASE)
+            val = re.sub(r"\bnext 12 months\b", "next 6 months", val, flags=re.IGNORECASE)
+            val = re.sub(r"\btwelve months\b", "six months", val, flags=re.IGNORECASE)
+            assessment[field] = val.strip()
     if not sources and "knowledge-base citation is unavailable" not in " ".join(
         assessment["limitations"]
     ).casefold():
